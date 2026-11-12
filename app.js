@@ -79,7 +79,7 @@ $('load-basic').onclick=async()=>{
   await loadDefaultWorkbook();
   const ready=!$('sheet').disabled;
   button.textContent=ready?'기본부문 불러오기 완료':'기본부문 다시 불러오기';
-  button.disabled=ready;
+  button.disabled=false;
  }finally{
   if($('sheet').disabled){button.disabled=false;button.textContent='기본부문 다시 불러오기';}
  }
