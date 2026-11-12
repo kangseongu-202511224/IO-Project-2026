@@ -246,7 +246,10 @@ function drawIndustryChart(results) {
   // 산업별 점의 위치 저장
   industryChartPoints = [];
 
+
   // 산업별 점 표시
+  industryChartPoints = [];
+
   results.forEach(r => {
     const px = x(r.influence);
     const py = y(r.sensitivity);
@@ -266,21 +269,11 @@ function drawIndustryChart(results) {
     else ctx.fillStyle = '#888888';
 
     ctx.beginPath();
-    ctx.arc(px, py, 3.5, 0, Math.PI * 2);
-    ctx.fill();
-    const highX = r.influence >= 1;
-    const highY = r.sensitivity >= 1;
-
-    if (highX && highY) ctx.fillStyle = '#e74c3c';
-    else if (highX) ctx.fillStyle = '#3498db';
-    else if (highY) ctx.fillStyle = '#27ae60';
-    else ctx.fillStyle = '#888888';
-
-    ctx.beginPath();
     ctx.arc(px, py, 6, 0, Math.PI * 2);
     ctx.fill();
-  });
-  // 축 제목
+ });
+
+ // 축 제목
   ctx.fillStyle = '#222';
   ctx.font = 'bold 16px sans-serif';
   ctx.textAlign = 'center';
