@@ -32,6 +32,33 @@ function renderResult(){$('results').hidden=false;$('cards').replaceChildren(...
 function csvCell(v){let s=String(v);if(/^[=+@-]/.test(s)&&typeof v!=='number')s="'"+s;return '"'+s.replaceAll('"','""')+'"';}
 $('download').onclick=()=>{if(!result)return;const rows=[['산업코드','산업명','생산유발액_백만원','수입유발액_백만원','부가가치유발액_백만원'],...result.rows.map(r=>[r.code,r.name,r.production,r.imports,r.valueAdded])];const url=URL.createObjectURL(new Blob(['\ufeff'+rows.map(r=>r.map(csvCell).join(',')).join('\r\n')],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='io-2023-results.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
 
+const ioFiles = {
+  basic: './data/io-2023.xlsx',
+  large: './data/io-2023-large.xlsx',
+  medium: './data/io-2023-medium.xlsx',
+  small: './data/io-2023-small.xlsx'
+};
+
+const ioLabels = {
+  basic: '기본부문',
+  large: '대분류',
+  medium: '중분류',
+  small: '소분류'
+};
+
+const ioSelect = document.createElement('select');
+ioSelect.id = 'io-classification';
+
+for (const key of ['basic', 'small', 'medium', 'large']) {
+  const option = document.createElement('option');
+  option.value = key;
+  option.textContent = ioLabels[key];
+  ioSelect.append(option);
+}
+
+const basicButton = $('load-basic');
+basicButton.parentNode.insertBefore(ioSelect, basicButton);
+
 async function loadDefaultWorkbook(){
  try {
   $('status').textContent='기본 Excel 내려받는 중…';
