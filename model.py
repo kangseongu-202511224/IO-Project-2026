@@ -74,3 +74,38 @@ def simulate(payload):
     result.sort(key=lambda r:r['production'],reverse=True)
     return emit({'demand':float(f.sum()),'production':float(x.sum()),'imports':float(m.sum()),
                  'valueAdded':float(v.sum()),'multiplier':float(x.sum()/f.sum()),'rows':result})
+
+def analyze_industries():
+    if not valid:
+        raise ValueError('검증된 데이터가 없습니다.')
+
+    n = len(codes)
+
+    # 생산유발계수행렬의 전산업 평균 열합계
+    average = np.sum(L) / n
+
+    # 영향력계수: 열합계 / 평균 열합계
+    influence = np.sum(L, axis=0) / average
+
+    # 감응도계수: 행합계 / 평균 행합계
+    sensitivity = np.sum(L, axis=1) / average
+
+    results = []
+
+    for i in range(n):
+        results.append({
+            'code': codes[i],
+            'name': names[i],
+            'influence': float(influence[i]),
+            'sensitivity': float(sensitivity[i])
+        })
+
+    results.sort(
+        key=lambda x: x['influence'],
+        reverse=True
+    )
+
+    return emit({
+        'count': n,
+        'results': results
+    })
