@@ -268,8 +268,6 @@ function drawIndustryChart(results) {
     ctx.beginPath();
     ctx.arc(px, py, 3.5, 0, Math.PI * 2);
     ctx.fill();
-  });
-
     const highX = r.influence >= 1;
     const highY = r.sensitivity >= 1;
 
@@ -279,10 +277,9 @@ function drawIndustryChart(results) {
     else ctx.fillStyle = '#888888';
 
     ctx.beginPath();
-    ctx.arc(x(r.influence), y(r.sensitivity), 3.5, 0, Math.PI * 2);
+    ctx.arc(px, py, 6, 0, Math.PI * 2);
     ctx.fill();
   });
-
   // 축 제목
   ctx.fillStyle = '#222';
   ctx.font = 'bold 16px sans-serif';
