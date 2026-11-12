@@ -1,18 +1,13 @@
 
 const $ = id => document.getElementById(id);
-
 const fmt = x => Number(x).toLocaleString('ko-KR', {
   maximumFractionDigits: 3
 });
 
-let worker;
-let nextId = 0;
+let worker, nextId = 0;
 let requests = new Map();
-let sectors = [];
-let rowChoices = [];
-let cells = [];
-let basket = [];
-let result = null;
+let sectors = [], rowChoices = [], cells = [];
+let basket = [], result = null;
 
 function text(tag, value) {
   const e = document.createElement(tag);
@@ -36,10 +31,8 @@ function startWorker() {
       $('status').textContent = d.text;
       return;
     }
-
     const p = requests.get(d.id);
     if (!p) return;
-
     requests.delete(d.id);
     d.ok ? p.resolve(d.result) : p.reject(Error(d.error));
   };
@@ -53,14 +46,12 @@ function startWorker() {
 }
 
 function options(el, list) {
-  el.replaceChildren(
-    ...list.map(x => {
-      const o = document.createElement('option');
-      o.value = x.code;
-      o.textContent = x.code + ' ' + x.name;
-      return o;
-    })
-  );
+  el.replaceChildren(...list.map(x => {
+    const o = document.createElement('option');
+    o.value = x.code;
+    o.textContent = x.code + ' ' + x.name;
+    return o;
+  }));
 }
 
 function invalidate() {
@@ -77,15 +68,13 @@ async function load(buffer) {
   $('analyze-status').textContent =
     '자료를 불러온 후 분석 버튼을 누르세요.';
 
-  const inputs = [
+  const inputIds = [
     'sheet', 'row', 'sector', 'add', 'run',
     'row-search', 'col-search',
     'sector-search', 'amount'
   ];
 
-  for (const id of inputs) {
-    $(id).disabled = true;
-  }
+  for (const id of inputIds) $(id).disabled = true;
 
   if (worker) worker.terminate();
 
@@ -98,44 +87,39 @@ async function load(buffer) {
 
   try {
     const info = await call('init', buffer);
-
     sectors = info.sectors;
-    options($('sector'), sectors);
 
+    options($('sector'), sectors);
     $('sector-search').value = '';
     $('row-search').value = '';
     $('col-search').value = '';
 
-    $('sheet').replaceChildren(
-      ...info.sheets.map(s => {
-        const o = text('option', s);
-        o.value = s;
-        return o;
-      })
-    );
+    $('sheet').replaceChildren(...info.sheets.map(s => {
+      const o = text('option', s);
+      o.value = s;
+      return o;
+    }));
 
     $('validation').textContent =
       JSON.stringify(info.residuals, null, 2) +
       '\n최대 절대 잔차: 허용값 1e-8 미만';
 
-    for (const id of inputs) {
-      $(id).disabled = false;
-    }
+    for (const id of inputIds) $(id).disabled = false;
 
     await explore();
 
     $('status').textContent =
-      '준비 완료 · ' +
-      sectors.length + '개 부문 · ' +
-      info.sheets.length + '개 시트 · 계수 검증 통과';
+      '준비 완료 · ' + sectors.length +
+      '개 부문 · ' + info.sheets.length +
+      '개 시트 · 계수 검증 통과';
 
   } catch (e) {
     $('status').textContent =
-      '준비 실패: ' + e.message +
-      ' — 새로고침 후 재시도하세요.';
+      '준비 실패: ' + e.message;
   }
 }
 
+// 원자료 탐색
 let exploreSeq = 0;
 
 async function explore() {
@@ -154,7 +138,6 @@ async function explore() {
     cells = d.cells;
 
     $('unit').textContent = d.unit;
-
     $('explore-caption').textContent =
       $('sheet').value + ' / 행: ' +
       d.selected + ' ' + d.name;
@@ -185,24 +168,24 @@ function renderCells() {
   const q = $('col-search').value.trim();
 
   $('cells').replaceChildren(
-    ...cells
-      .filter(c => (c.code + ' ' + c.name).includes(q))
-      .map(c => {
-        const tr = document.createElement('tr');
+    ...cells.filter(c =>
+      (c.code + ' ' + c.name).includes(q)
+    ).map(c => {
+      const tr = document.createElement('tr');
 
-        const values = [
-          c.code,
-          c.name,
-          c.value === null
-            ? '빈 셀'
-            : typeof c.value === 'number'
-              ? fmt(c.value)
-              : c.value
-        ];
-
-        values.forEach(v => tr.append(text('td', v)));
-        return tr;
-      })
+      for (const v of [
+        c.code,
+        c.name,
+        c.value === null
+          ? '빈 셀'
+          : typeof c.value === 'number'
+            ? fmt(c.value)
+            : c.value
+      ]) {
+        tr.append(text('td', v));
+      }
+      return tr;
+    })
   );
 }
 
@@ -217,9 +200,8 @@ $('row').onchange = explore;
 $('row-search').oninput = () => {
   filterRows();
 
-  if ($('row').value) {
-    explore();
-  } else {
+  if ($('row').value) explore();
+  else {
     $('cells').replaceChildren();
     $('explore-caption').textContent =
       '일치하는 행이 없습니다.';
@@ -230,7 +212,6 @@ $('col-search').oninput = renderCells;
 
 $('sector-search').oninput = () => {
   const q = $('sector-search').value.trim();
-
   options(
     $('sector'),
     sectors.filter(s =>
@@ -239,28 +220,27 @@ $('sector-search').oninput = () => {
   );
 };
 
+// 최종수요 증가 시뮬레이션
 function renderBasket() {
-  $('basket').replaceChildren(
-    ...basket.map((s, i) => {
-      const li = text(
-        'li',
-        s.code + ' ' + s.name +
-        ' / ' + fmt(s.amount) + '백만원 '
-      );
+  $('basket').replaceChildren(...basket.map((s, i) => {
+    const li = text(
+      'li',
+      s.code + ' ' + s.name +
+      ' / ' + fmt(s.amount) + '백만원 '
+    );
 
-      const b = text('button', '삭제');
-      b.type = 'button';
+    const b = text('button', '삭제');
+    b.type = 'button';
 
-      b.onclick = () => {
-        basket.splice(i, 1);
-        invalidate();
-        renderBasket();
-      };
+    b.onclick = () => {
+      basket.splice(i, 1);
+      invalidate();
+      renderBasket();
+    };
 
-      li.append(b);
-      return li;
-    })
-  );
+    li.append(b);
+    return li;
+  }));
 
   $('sim-status').textContent = basket.length
     ? basket.length + '개 입력 준비. 계산 버튼을 누르세요.'
@@ -271,7 +251,6 @@ $('scenario').onsubmit = e => {
   e.preventDefault();
 
   const amount = Number($('amount').value);
-
   const s = sectors.find(
     s => s.code === $('sector').value
   );
@@ -301,7 +280,6 @@ $('run').onclick = async () => {
   }
 
   const snapshot = basket.map(s => ({ ...s }));
-
   $('run').disabled = true;
   $('sim-status').textContent = '계산 중…';
 
@@ -333,73 +311,60 @@ $('run').onclick = async () => {
 function renderResult() {
   $('results').hidden = false;
 
-  const summary = [
+  const summaries = [
     ['수요 증가액', result.demand],
     ['생산유발액', result.production],
     ['수입유발액', result.imports],
     ['부가가치유발액', result.valueAdded]
   ];
 
-  $('cards').replaceChildren(
-    ...summary.map(([title, v]) => {
-      const d = text('div', title);
-      d.className = 'card';
-
-      d.append(
-        text('strong', fmt(v)),
-        text('span', '백만원')
-      );
-
-      return d;
-    })
-  );
+  $('cards').replaceChildren(...summaries.map(([title, v]) => {
+    const d = text('div', title);
+    d.className = 'card';
+    d.append(
+      text('strong', fmt(v)),
+      text('span', '백만원')
+    );
+    return d;
+  }));
 
   const max = Math.max(
-    ...result.rows.map(r => r.production),
-    1
+    ...result.rows.map(r => r.production), 1
   );
 
-  $('bars').replaceChildren(
-    ...result.rows.slice(0, 15).map(r => {
-      const d = text(
-        'div',
-        r.name + ' · ' +
-        fmt(r.production) + '백만원'
-      );
+  $('bars').replaceChildren(...result.rows.slice(0, 15).map(r => {
+    const d = text(
+      'div',
+      r.name + ' · ' + fmt(r.production) + '백만원'
+    );
 
-      d.className = 'bar';
+    d.className = 'bar';
 
-      const t = document.createElement('div');
-      t.className = 'track';
+    const track = document.createElement('div');
+    track.className = 'track';
 
-      const f = document.createElement('div');
-      f.className = 'fill';
+    const fill = document.createElement('div');
+    fill.className = 'fill';
+    fill.style.width =
+      Math.max(0, r.production / max * 100) + '%';
 
-      f.style.width =
-        Math.max(0, r.production / max * 100) + '%';
+    track.append(fill);
+    d.append(track);
+    return d;
+  }));
 
-      t.append(f);
-      d.append(t);
+  $('result-rows').replaceChildren(...result.rows.map(r => {
+    const tr = document.createElement('tr');
 
-      return d;
-    })
-  );
+    [
+      r.code, r.name,
+      fmt(r.production),
+      fmt(r.imports),
+      fmt(r.valueAdded)
+    ].forEach(v => tr.append(text('td', v)));
 
-  $('result-rows').replaceChildren(
-    ...result.rows.map(r => {
-      const tr = document.createElement('tr');
-
-      [
-        r.code,
-        r.name,
-        fmt(r.production),
-        fmt(r.imports),
-        fmt(r.valueAdded)
-      ].forEach(v => tr.append(text('td', v)));
-
-      return tr;
-    })
-  );
+    return tr;
+  }));
 }
 
 function csvCell(v) {
@@ -417,18 +382,14 @@ $('download').onclick = () => {
 
   const rows = [
     [
-      '산업코드',
-      '산업명',
+      '산업코드', '산업명',
       '생산유발액_백만원',
       '수입유발액_백만원',
       '부가가치유발액_백만원'
     ],
     ...result.rows.map(r => [
-      r.code,
-      r.name,
-      r.production,
-      r.imports,
-      r.valueAdded
+      r.code, r.name,
+      r.production, r.imports, r.valueAdded
     ])
   ];
 
@@ -449,7 +410,7 @@ $('download').onclick = () => {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 };
 
-// 4가지 산업분류별 Excel 파일
+// 4가지 산업분류
 const ioFiles = {
   basic: './data/io-2023.xlsx',
   large: './data/io-2023-large.xlsx',
@@ -464,7 +425,6 @@ const ioLabels = {
   small: '소분류'
 };
 
-// 산업분류 선택 메뉴
 const ioSelect = document.createElement('select');
 ioSelect.id = 'io-classification';
 
@@ -496,8 +456,7 @@ async function loadDefaultWorkbook() {
 
   } catch (error) {
     $('status').textContent =
-      '준비 실패: ' + error.message +
-      ' — 연결 상태를 확인하고 새로고침하세요.';
+      '준비 실패: ' + error.message;
   }
 }
 
@@ -527,244 +486,369 @@ ioSelect.onchange = () => {
     ioLabels[ioSelect.value] + ' 불러오기';
 };
 
-// 영향력계수 및 감응도계수 분석
-$('analyze-btn').onclick = async () => {
-  const button = $('analyze-btn');
-  const status = $('analyze-status');
+// 산업 분석 데이터
+let analysisRows = [];
+const selectedIndustries = new Set();
 
+// 산점도 대신 새로운 분석 화면 생성
+function prepareAnalysisView() {
+  const root = $('analyze-results');
+
+  root.innerHTML = `
+    <h3>산업별 순위 막대그래프</h3>
+    <p>상위 15개 산업을 보여줍니다.
+       영향력계수와 감응도계수의 기준값은 1입니다.</p>
+
+    <label>순위 기준
+      <select id="rank-metric">
+        <option value="influence">영향력계수</option>
+        <option value="sensitivity">감응도계수</option>
+      </select>
+    </label>
+
+    <div id="ranking-bars"></div>
+
+    <h3>산업별 검색·정렬 비교표</h3>
+    <p>체크박스로 최대 5개 산업을 선택해 비교할 수 있습니다.</p>
+
+    <label>산업명 또는 산업코드 검색
+      <input id="analysis-search"
+             placeholder="예: 자동차, 반도체, 1010">
+    </label>
+
+    <label>정렬 기준
+      <select id="analysis-sort">
+        <option value="influence">영향력계수</option>
+        <option value="sensitivity">감응도계수</option>
+        <option value="name">산업명</option>
+        <option value="code">산업코드</option>
+      </select>
+    </label>
+
+    <label>정렬 방향
+      <select id="analysis-direction">
+        <option value="desc">내림차순</option>
+        <option value="asc">오름차순</option>
+      </select>
+    </label>
+
+    <p id="analysis-count" role="status"></p>
+
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>선택</th>
+            <th>번호</th>
+            <th>산업코드</th>
+            <th>산업명</th>
+            <th>영향력계수</th>
+            <th>감응도계수</th>
+          </tr>
+        </thead>
+        <tbody id="analysis-table-body"></tbody>
+      </table>
+    </div>
+
+    <h3>선택 산업 비교 (최대 5개)</h3>
+    <p id="selection-status">표에서 산업을 선택하세요.</p>
+
+    <button id="selection-clear" type="button">
+      선택 초기화
+    </button>
+
+    <div id="industry-comparison"></div>
+  `;
+
+  $('rank-metric').onchange = renderRankingBars;
+  $('analysis-search').oninput = renderAnalysisTable;
+  $('analysis-sort').onchange = renderAnalysisTable;
+  $('analysis-direction').onchange = renderAnalysisTable;
+
+  $('selection-clear').onclick = () => {
+    selectedIndustries.clear();
+    renderAnalysisTable();
+    renderIndustryComparison();
+  };
+}
+
+function metricName(key) {
+  return key === 'influence'
+    ? '영향력계수'
+    : '감응도계수';
+}
+
+// 막대 생성
+function makeBar(value, max, color) {
+  const track = document.createElement('div');
+
+  track.style.cssText =
+    'height:15px;' +
+    'background:#e2e8f0;' +
+    'border-radius:8px;' +
+    'overflow:hidden;' +
+    'flex:1;' +
+    'min-width:70px;';
+
+  const fill = document.createElement('div');
+
+  const width = Math.max(
+    0,
+    Math.min(100, value / max * 100)
+  );
+
+  fill.style.cssText =
+    'height:100%;' +
+    'border-radius:8px;' +
+    'background:' + color + ';' +
+    'width:' + width + '%;';
+
+  track.append(fill);
+  return track;
+}
+
+// 1. 순위 막대그래프
+function renderRankingBars() {
+  const metric = $('rank-metric').value;
+
+  const top = [...analysisRows]
+    .sort((a, b) => b[metric] - a[metric])
+    .slice(0, 15);
+
+  const maximum = Math.max(
+    1,
+    ...top.map(r => r[metric])
+  );
+
+  const root = $('ranking-bars');
+  root.replaceChildren();
+
+  for (const r of top) {
+    const item = document.createElement('div');
+    item.style.cssText = 'margin:10px 0;';
+
+    const heading = text(
+      'div',
+      r.name + ' (' + r.code + ') · ' +
+      Number(r[metric]).toFixed(4)
+    );
+
+    heading.style.cssText =
+      'font-size:14px;margin-bottom:4px;';
+
+    const color = metric === 'influence'
+      ? '#2563eb'
+      : '#d97706';
+
+    item.append(
+      heading,
+      makeBar(r[metric], maximum, color)
+    );
+
+    root.append(item);
+  }
+}
+
+// 2. 산업 검색·정렬 비교표
+function renderAnalysisTable() {
+  const query = $('analysis-search')
+    .value.trim().toLowerCase();
+
+  const sortBy = $('analysis-sort').value;
+  const descending =
+    $('analysis-direction').value === 'desc';
+
+  const displayed = analysisRows
+    .filter(r =>
+      (r.code + ' ' + r.name)
+        .toLowerCase()
+        .includes(query)
+    )
+    .sort((a, b) => {
+      const comparison =
+        sortBy === 'name' || sortBy === 'code'
+          ? String(a[sortBy]).localeCompare(
+              String(b[sortBy]), 'ko'
+            )
+          : a[sortBy] - b[sortBy];
+
+      return descending ? -comparison : comparison;
+    });
+
+  $('analysis-count').textContent =
+    '검색 결과: ' + displayed.length +
+    '개 / 전체 ' + analysisRows.length + '개 산업';
+
+  const body = $('analysis-table-body');
+  body.replaceChildren();
+
+  displayed.forEach((r, i) => {
+    const tr = document.createElement('tr');
+
+    const checkTd = document.createElement('td');
+    const check = document.createElement('input');
+
+    check.type = 'checkbox';
+    check.checked = selectedIndustries.has(r.code);
+    check.setAttribute(
+      'aria-label',
+      r.name + ' 비교 대상으로 선택'
+    );
+
+    check.onchange = () => {
+      if (check.checked && selectedIndustries.size >= 5) {
+        check.checked = false;
+
+        $('selection-status').textContent =
+          '최대 5개 산업까지만 선택할 수 있습니다.';
+
+        return;
+      }
+
+      if (check.checked) {
+        selectedIndustries.add(r.code);
+      } else {
+        selectedIndustries.delete(r.code);
+      }
+
+      renderIndustryComparison();
+    };
+
+    checkTd.append(check);
+    tr.append(checkTd);
+
+    const values = [
+      i + 1,
+      r.code,
+      r.name,
+      r.influence.toFixed(4),
+      r.sensitivity.toFixed(4)
+    ];
+
+    for (const value of values) {
+      tr.append(text('td', value));
+    }
+
+    body.append(tr);
+  });
+}
+
+// 3. 최대 5개 산업 직접 비교
+function renderIndustryComparison() {
+  const chosen = [...selectedIndustries]
+    .map(code =>
+      analysisRows.find(r => r.code === code)
+    )
+    .filter(Boolean);
+
+  $('selection-status').textContent = chosen.length
+    ? chosen.length +
+      '개 산업 선택됨 · 파랑: 영향력계수 / 주황: 감응도계수'
+    : '표에서 산업을 선택하세요.';
+
+  const root = $('industry-comparison');
+  root.replaceChildren();
+
+  if (!chosen.length) return;
+
+  const maximum = Math.max(
+    1,
+    ...chosen.flatMap(r => [
+      r.influence,
+      r.sensitivity
+    ])
+  );
+
+  for (const r of chosen) {
+    const card = document.createElement('div');
+
+    card.style.cssText =
+      'padding:12px 0;' +
+      'border-bottom:1px solid #dbe2ea;';
+
+    const heading = text(
+      'strong',
+      r.name + ' (' + r.code + ')'
+    );
+
+    card.append(heading);
+
+    const metrics = [
+      ['influence', '#2563eb'],
+      ['sensitivity', '#d97706']
+    ];
+
+    for (const [key, color] of metrics) {
+      const line = document.createElement('div');
+
+      line.style.cssText =
+        'display:flex;' +
+        'align-items:center;' +
+        'gap:10px;' +
+        'margin-top:7px;';
+
+      const label = text(
+        'span',
+        metricName(key) + ': ' + r[key].toFixed(4)
+      );
+
+      label.style.cssText =
+        'min-width:160px;font-size:13px;';
+
+      line.append(
+        label,
+        makeBar(r[key], maximum, color)
+      );
+
+      card.append(line);
+    }
+
+    root.append(card);
+  }
+}
+
+// 분석 화면 준비
+prepareAnalysisView();
+
+// 분석 버튼
+$('analyze-btn').onclick = async () => {
   if ($('sheet').disabled) {
-    status.textContent = '먼저 Excel 자료를 불러오세요.';
+    $('analyze-status').textContent =
+      '먼저 산업분류를 선택하고 Excel을 불러오세요.';
     return;
   }
 
+  const button = $('analyze-btn');
   button.disabled = true;
-  status.textContent =
+
+  $('analyze-status').textContent =
     '영향력계수·감응도계수 계산 중…';
 
   try {
     const data = await call('analyze', {});
 
-    // 산업별 결과표
-    $('analyze-rows').replaceChildren(
-      ...data.results.map((r, i) => {
-        const tr = document.createElement('tr');
+    analysisRows = data.results;
+    selectedIndustries.clear();
 
-        [
-          i + 1,
-          r.code,
-          r.name,
-          fmt(r.influence),
-          fmt(r.sensitivity)
-        ].forEach(v => {
-          tr.append(text('td', v));
-        });
+    $('analysis-search').value = '';
+    $('analysis-sort').value = 'influence';
+    $('analysis-direction').value = 'desc';
+    $('rank-metric').value = 'influence';
 
-        return tr;
-      })
-    );
-
-    // 그래프 영역을 먼저 표시
     $('analyze-results').hidden = false;
 
-    // 표시된 다음 그래프 그리기
-    requestAnimationFrame(() => {
-      drawIndustryChart(data.results);
-    });
+    renderRankingBars();
+    renderAnalysisTable();
+    renderIndustryComparison();
 
-    status.textContent =
-      data.count + '개 산업의 분석이 완료되었습니다.';
+    $('analyze-status').textContent =
+      data.count + '개 산업 분석 완료.';
 
-  } catch (error) {
-    status.textContent =
-      '분석 실패: ' + error.message;
+  } catch (e) {
+    $('analyze-status').textContent =
+      '분석 실패: ' + e.message;
 
   } finally {
     button.disabled = false;
   }
 };
-
-// 영향력·감응도 산점도
-// 점을 클릭하면 해당 산업 정보 표시
-function drawIndustryChart(results) {
-  const canvas = $('industry-chart');
-
-  if (!canvas || !results || !results.length) return;
-
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
-
-  const W = canvas.width;
-  const H = canvas.height;
-
-  const left = 82;
-  const right = 32;
-  const top = 36;
-  const bottom = 74;
-
-  const width = W - left - right;
-  const height = H - top - bottom;
-
-  const values = results.filter(r =>
-    Number.isFinite(r.influence) &&
-    Number.isFinite(r.sensitivity)
-  );
-
-  if (!values.length) return;
-
-  const maxX = Math.max(
-    1.2,
-    ...values.map(r => r.influence)
-  ) * 1.06;
-
-  const maxY = Math.max(
-    1.2,
-    ...values.map(r => r.sensitivity)
-  ) * 1.06;
-
-  const x = v => left + (v / maxX) * width;
-  const y = v => H - bottom - (v / maxY) * height;
-
-  ctx.clearRect(0, 0, W, H);
-
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, W, H);
-
-  // 기준값 1
-  ctx.strokeStyle = '#94a3b8';
-  ctx.lineWidth = 1;
-  ctx.setLineDash([6, 5]);
-
-  ctx.beginPath();
-  ctx.moveTo(x(1), top);
-  ctx.lineTo(x(1), H - bottom);
-
-  ctx.moveTo(left, y(1));
-  ctx.lineTo(W - right, y(1));
-  ctx.stroke();
-
-  ctx.setLineDash([]);
-
-  // X축, Y축
-  ctx.strokeStyle = '#334155';
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-
-  ctx.moveTo(left, top);
-  ctx.lineTo(left, H - bottom);
-  ctx.lineTo(W - right, H - bottom);
-
-  ctx.stroke();
-
-  // 축 눈금
-  ctx.fillStyle = '#334155';
-  ctx.font = '14px sans-serif';
-
-  for (let i = 0; i <= 5; i++) {
-    const xv = maxX * i / 5;
-    const yv = maxY * i / 5;
-
-    ctx.textAlign = 'center';
-    ctx.fillText(
-      xv.toFixed(1),
-      x(xv),
-      H - bottom + 24
-    );
-
-    ctx.textAlign = 'right';
-    ctx.fillText(
-      yv.toFixed(1),
-      left - 12,
-      y(yv) + 5
-    );
-  }
-
-  // 그래프의 점과 실제 산업 정보 연결
-  const points = [];
-
-  values.forEach(r => {
-    const px = x(r.influence);
-    const py = y(r.sensitivity);
-
-    points.push({
-      x: px,
-      y: py,
-      industry: r
-    });
-
-    const highX = r.influence >= 1;
-    const highY = r.sensitivity >= 1;
-
-    if (highX && highY) {
-      ctx.fillStyle = '#e74c3c';
-    } else if (highX) {
-      ctx.fillStyle = '#3498db';
-    } else if (highY) {
-      ctx.fillStyle = '#27ae60';
-    } else {
-      ctx.fillStyle = '#888888';
-    }
-
-    ctx.globalAlpha = 0.67;
-
-    ctx.beginPath();
-    ctx.arc(px, py, 6, 0, Math.PI * 2);
-    ctx.fill();
-  });
-
-  ctx.globalAlpha = 1;
-
-  // 축 제목
-  ctx.fillStyle = '#1e293b';
-  ctx.font = 'bold 16px sans-serif';
-  ctx.textAlign = 'center';
-
-  ctx.fillText('영향력계수', W / 2, H - 14);
-
-  ctx.save();
-  ctx.translate(23, H / 2);
-  ctx.rotate(-Math.PI / 2);
-
-  ctx.fillText('감응도계수', 0, 0);
-  ctx.restore();
-
-  // 점 클릭 기능
-  canvas.style.cursor = 'crosshair';
-
-  canvas.onclick = e => {
-    const rect = canvas.getBoundingClientRect();
-
-    if (!rect.width || !rect.height) return;
-
-    const mx =
-      (e.clientX - rect.left) * W / rect.width;
-
-    const my =
-      (e.clientY - rect.top) * H / rect.height;
-
-    let chosen = null;
-    let distance = Infinity;
-
-    for (const p of points) {
-      const d = Math.hypot(
-        p.x - mx,
-        p.y - my
-      );
-
-      if (d < distance) {
-        distance = d;
-        chosen = p.industry;
-      }
-    }
-
-    if (!chosen || distance > 14) return;
-
-    alert(
-      '산업명: ' + chosen.name + '\n' +
-      '산업코드: ' + chosen.code + '\n' +
-      '영향력계수: ' +
-        chosen.influence.toFixed(4) + '\n' +
-      '감응도계수: ' +
-        chosen.sensitivity.toFixed(4)
-    );
-  };
-}
