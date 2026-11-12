@@ -84,3 +84,10 @@ $('load-basic').onclick=async()=>{
   if($('sheet').disabled){button.disabled=false;button.textContent='기본부문 다시 불러오기';}
  }
 };
+
+ioSelect.onchange = () => {
+  $('load-basic').textContent = ioLabels[ioSelect.value] + ' 불러오기';
+};
+
+
+
