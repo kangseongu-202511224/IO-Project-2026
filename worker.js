@@ -22,10 +22,16 @@ async function handle({id,type,payload}) {
       py.globals.set('sheet_input',payload.sheet);
       py.globals.set('row_input',payload.row||'');
       result=py.runPython('explore(sheet_input, row_input)');
-    } else {
+    
+    } else if(type==='analyze') {
+      result=py.runPython('analyze_industries()');
+    } else if(type==='simulate') {
       py.globals.set('scenario_input',JSON.stringify(payload));
       result=py.runPython('simulate(scenario_input)');
+    } else {
+      throw Error('지원하지 않는 작업: '+type);
     }
+
     postMessage({id,ok:true,result:JSON.parse(result)});
   } catch(error) { postMessage({id,ok:false,error:String(error)}); }
 }
