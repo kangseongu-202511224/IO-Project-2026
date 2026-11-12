@@ -128,5 +128,99 @@ $('analyze-btn').onclick = async () => {
   }
 };
 
+function drawIndustryChart(results) {
+  const canvas = document.getElementById('industry-chart');
+  const ctx = canvas.getContext('2d');
+
+  const W = canvas.width;
+  const H = canvas.height;
+  const left = 70;
+  const right = 30;
+  const top = 35;
+  const bottom = 65;
+
+  const pw = W - left - right;
+  const ph = H - top - bottom;
+
+  const maxX = Math.max(
+    1.2,
+    ...results.map(r => r.influence)
+  ) * 1.08;
+
+  const maxY = Math.max(
+    1.2,
+    ...results.map(r => r.sensitivity)
+  ) * 1.08;
+
+  const x = value => left + value / maxX * pw;
+  const y = value => H - bottom - value / maxY * ph;
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = 'white';
+  ctx.fillRect(0, 0, W, H);
+
+  // 기준값 1 표시
+  ctx.strokeStyle = '#999';
+  ctx.setLineDash([6, 5]);
+  ctx.beginPath();
+  ctx.moveTo(x(1), top);
+  ctx.lineTo(x(1), H - bottom);
+  ctx.moveTo(left, y(1));
+  ctx.lineTo(W - right, y(1));
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // X축과 Y축
+  ctx.strokeStyle = '#333';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(left, top);
+  ctx.lineTo(left, H - bottom);
+  ctx.lineTo(W - right, H - bottom);
+  ctx.stroke();
+
+  // 축 눈금
+  ctx.fillStyle = '#333';
+  ctx.font = '14px sans-serif';
+
+  for (let i = 0; i <= 5; i++) {
+    const xv = maxX * i / 5;
+    const yv = maxY * i / 5;
+
+    ctx.textAlign = 'center';
+    ctx.fillText(xv.toFixed(1), x(xv), H - bottom + 22);
+
+    ctx.textAlign = 'right';
+    ctx.fillText(yv.toFixed(1), left - 10, y(yv) + 5);
+  }
+
+  // 산업별 점 표시
+  results.forEach(r => {
+    const highX = r.influence >= 1;
+    const highY = r.sensitivity >= 1;
+
+    if (highX && highY) ctx.fillStyle = '#e74c3c';
+    else if (highX) ctx.fillStyle = '#3498db';
+    else if (highY) ctx.fillStyle = '#27ae60';
+    else ctx.fillStyle = '#888888';
+
+    ctx.beginPath();
+    ctx.arc(x(r.influence), y(r.sensitivity), 3.5, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // 축 제목
+  ctx.fillStyle = '#222';
+  ctx.font = 'bold 16px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('영향력계수', W / 2, H - 12);
+
+  ctx.save();
+  ctx.translate(20, H / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText('감응도계수', 0, 0);
+  ctx.restore();
+}
+
 
 
