@@ -98,7 +98,7 @@ $('analyze-btn').onclick = async () => {
 
   try {
     const data = await call('analyze', {});
-
+drawIndustryChart(data.results);
     $('analyze-rows').replaceChildren(
       ...data.results.map((r, i) => {
         const tr = document.createElement('tr');
