@@ -10,7 +10,7 @@ async function handle({id,type,payload}) {
       py=await loadPyodide({indexURL:BASE});
       await py.loadPackage(['numpy','micropip']);
       await py.runPythonAsync("import micropip\nawait micropip.install('openpyxl==3.1.5')");
-      const response=await fetch('./model.py');
+      const response=await fetch('./model.py?v=2');
       if(!response.ok) throw Error('model.py를 불러올 수 없습니다.');
       await py.runPythonAsync(await response.text());
       postMessage({type:'status',text:'Excel 읽기와 계수 검증 중…'});
