@@ -129,6 +129,53 @@ $('analyze-btn').onclick = async () => {
   }
 };
 
+let industryChartPoints = [];
+
+function enableIndustryChartClick() {
+  const canvas = document.getElementById('industry-chart');
+
+  canvas.style.cursor = 'crosshair';
+
+  canvas.onclick = event => {
+    const rect = canvas.getBoundingClientRect();
+
+    // 화면 크기와 실제 캔버스 크기의 차이를 보정
+    const mouseX =
+      (event.clientX - rect.left) * canvas.width / rect.width;
+    const mouseY =
+      (event.clientY - rect.top) * canvas.height / rect.height;
+
+    // 클릭한 위치와 가장 가까운 산업 찾기
+    let closest = null;
+    let minDistance = Infinity;
+
+    for (const point of industryChartPoints) {
+      const distance = Math.hypot(
+        point.x - mouseX,
+        point.y - mouseY
+      );
+
+      if (distance < minDistance) {
+        minDistance = distance;
+        closest = point;
+      }
+    }
+
+    // 점에서 12픽셀 이내를 클릭한 경우만 표시
+    if (!closest || minDistance > 12) return;
+
+    const r = closest.industry;
+
+    const message =
+      '산업명: ' + r.name + '\n' +
+      '산업코드: ' + r.code + '\n' +
+      '영향력계수: ' + Number(r.influence).toFixed(4) + '\n' +
+      '감응도계수: ' + Number(r.sensitivity).toFixed(4);
+
+    alert(message);
+  };
+}
+
 function drawIndustryChart(results) {
   const canvas = document.getElementById('industry-chart');
   const ctx = canvas.getContext('2d');
@@ -195,8 +242,34 @@ function drawIndustryChart(results) {
     ctx.fillText(yv.toFixed(1), left - 10, y(yv) + 5);
   }
 
+  
+  // 산업별 점의 위치 저장
+  industryChartPoints = [];
+
   // 산업별 점 표시
   results.forEach(r => {
+    const px = x(r.influence);
+    const py = y(r.sensitivity);
+
+    industryChartPoints.push({
+      x: px,
+      y: py,
+      industry: r
+    });
+
+    const highX = r.influence >= 1;
+    const highY = r.sensitivity >= 1;
+
+    if (highX && highY) ctx.fillStyle = '#e74c3c';
+    else if (highX) ctx.fillStyle = '#3498db';
+    else if (highY) ctx.fillStyle = '#27ae60';
+    else ctx.fillStyle = '#888888';
+
+    ctx.beginPath();
+    ctx.arc(px, py, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
     const highX = r.influence >= 1;
     const highY = r.sensitivity >= 1;
 
@@ -221,6 +294,7 @@ function drawIndustryChart(results) {
   ctx.rotate(-Math.PI / 2);
   ctx.fillText('감응도계수', 0, 0);
   ctx.restore();
+enableIndustryChartClick();
 }
 
 
