@@ -98,7 +98,7 @@ $('analyze-btn').onclick = async () => {
 
   try {
     const data = await call('analyze', {});
-drawIndustryChart(data.results);
+
     $('analyze-rows').replaceChildren(
       ...data.results.map((r, i) => {
         const tr = document.createElement('tr');
@@ -118,6 +118,7 @@ drawIndustryChart(data.results);
     );
 
     $('analyze-results').hidden = false;
+   requestAnimationFrame(() => drawIndustryChart(data.results));
     status.textContent =
       data.count + '개 산업의 분석이 완료되었습니다.';
 
