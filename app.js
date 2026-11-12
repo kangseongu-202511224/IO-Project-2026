@@ -89,5 +89,44 @@ ioSelect.onchange = () => {
   $('load-basic').textContent = ioLabels[ioSelect.value] + ' 불러오기';
 };
 
+$('analyze-btn').onclick = async () => {
+  const button = $('analyze-btn');
+  const status = $('analyze-status');
+
+  button.disabled = true;
+  status.textContent = '영향력계수·감응도계수 계산 중…';
+
+  try {
+    const data = await call('analyze', {});
+
+    $('analyze-rows').replaceChildren(
+      ...data.results.map((r, i) => {
+        const tr = document.createElement('tr');
+
+        [
+          i + 1,
+          r.code,
+          r.name,
+          fmt(r.influence),
+          fmt(r.sensitivity)
+        ].forEach(v => {
+          tr.append(text('td', v));
+        });
+
+        return tr;
+      })
+    );
+
+    $('analyze-results').hidden = false;
+    status.textContent =
+      data.count + '개 산업의 분석이 완료되었습니다.';
+
+  } catch (error) {
+    status.textContent = '분석 실패: ' + error.message;
+  } finally {
+    button.disabled = false;
+  }
+};
+
 
 
