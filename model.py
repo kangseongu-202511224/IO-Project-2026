@@ -13,7 +13,12 @@ def initialize(raw):
     wb.close()
     sheets = list(book)
     base = book['국산투입계수(Ad)']
-    codes = [str(c) for c in base[4][2:] if c is not None and str(c).isdigit() and int(str(c)) < 9000]
+    
+row_codes = {str(r[0]) for r in base[6:] if r and r[0] is not None}
+codes = [str(c) for c in base[4][2:]
+         if c is not None and str(c) in row_codes
+         and not (str(c).isdigit() and int(str(c)) >= 9000)]
+
     if len(codes) not in (33, 83, 165, 380) or len(set(codes)) != len(codes):
         raise ValueError('이 버전은 첨부된 2023년 380부문 워크북 구조만 지원합니다.')
     nm = {str(r[0]): str(r[1]) for r in base[6:]}
