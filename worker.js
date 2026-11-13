@@ -9,8 +9,10 @@ async function handle({ id, type, payload }) {
     let result;
     if(type==='init') {
       postMessage({type:'status',text:'Python 실행 환경 준비 중…'});
-      importScripts(BASE+'pyodide.js');
-      py=await loadPyodide({indexURL:BASE});
+      const PYODIDE_URL = 'https://cdn.jsdelivr.net/pyodide/v0.27.7/full/';
+
+importScripts(PYODIDE_URL + 'pyodide.js');
+py = await loadPyodide({ indexURL: PYODIDE_URL });
       await py.loadPackage(['numpy','micropip']);
       await py.runPythonAsync("import micropip\nawait micropip.install('openpyxl==3.1.5')");
       const response=await fetch('./model.py?v=2');
