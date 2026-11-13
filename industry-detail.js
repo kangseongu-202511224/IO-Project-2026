@@ -4,9 +4,13 @@
   'use strict';
 
   const byId = id => document.getElementById(id);
-  const host = byId('industry-analysis');
+  const host =
+  byId('industry-analysis') ||
+  document.querySelector('main');
 
-  if (!host) return;
+if (!host) {
+  throw new Error('분석 화면을 추가할 위치가 없습니다.');
+}
 
   // 상세 분석 화면 자동 생성
   const section = document.createElement('section');
