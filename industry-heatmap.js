@@ -1,368 +1,733 @@
+
+/* 산업별 영향력계수 / 감응도계수 히트맵 */
 (() => {
   'use strict';
 
-  const el = id => document.getElementById(id);
-  const anchor = el('industry-detail') || document.querySelector('main');
+  const $ = id => document.getElementById(id);
+  const existing = $('industry-heatmap');
+  const anchor = $('industry-detail') ||
+    $('industry-analysis') ||
+    document.querySelector('main');
 
-  if (!anchor || el('industry-heatmap')) return;
+  if (!anchor) return;
 
   const style = document.createElement('style');
   style.textContent = `
     #industry-heatmap {
-      margin:28px 0;
-      color:#27344b;
+      margin:32px 0;
+      color:#223148;
       font-family:inherit;
     }
-
     #industry-heatmap * {
       box-sizing:border-box;
     }
-
     #industry-heatmap .hm-shell {
-      background:#f4f5f7;
-      border-radius:18px;
       padding:22px;
+      background:#f3f6fb;
+      border:1px solid #e1e8f2;
+      border-radius:20px;
     }
-
-    #industry-heatmap .hm-head h2 {
-      margin:0 0 6px;
-      font-size:26px;
-      color:#2a374d;
+    #industry-heatmap .hm-kicker {
+      color:#5075ae;
+      font-size:11px;
+      font-weight:750;
+      letter-spacing:1.4px;
     }
-
-    #industry-heatmap .hm-sub {
-      margin:0 0 16px;
-      color:#6f7d90;
+    #industry-heatmap .hm-title {
+      font-size:25px;
+      margin:6px 0;
+      color:#182b47;
+    }
+    #industry-heatmap .hm-desc {
       font-size:13px;
+      color:#65748b;
+      line-height:1.7;
+      margin:0 0 16px;
     }
-
+    #industry-heatmap .hm-toolbar {
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
+    }
+    #industry-heatmap button.hm-run {
+      border:0;
+      padding:12px 18px;
+      border-radius:10px;
+      background:#254e85;
+      color:white;
+      font:inherit;
+      font-weight:650;
+      cursor:pointer;
+    }
+    #industry-heatmap button.hm-run:disabled {
+      opacity:.55;
+      cursor:wait;
+    }
+    #industry-heatmap .hm-status {
+      font-size:13px;
+      color:#64748b;
+      min-height:20px;
+    }
+    #industry-heatmap .hm-summary {
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+      margin:15px 0;
+    }
+    #industry-heatmap .hm-stat {
+      background:white;
+      border:1px solid #e3eaf3;
+      border-radius:13px;
+      padding:16px;
+    }
+    #industry-heatmap .hm-stat small {
+      display:block;
+      font-size:12px;
+      color:#6a7890;
+    }
+    #industry-heatmap .hm-stat strong {
+      display:block;
+      font-size:25px;
+      margin:6px 0;
+      color:#233a5e;
+    }
+    #industry-heatmap .hm-stat span {
+      font-size:12px;
+      color:#8290a3;
+    }
+    #industry-heatmap .hm-card {
+      background:white;
+      padding:18px;
+      border:1px solid #e1e8f1;
+      border-radius:15px;
+      box-shadow:0 4px 14px rgba(20,42,82,.04);
+      margin:16px 0;
+    }
+    #industry-heatmap .hm-cardhead {
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      margin-bottom:10px;
+    }
+    #industry-heatmap .hm-cardhead h3 {
+      font-size:19px;
+      margin:0;
+      color:#253954;
+    }
+    #industry-heatmap .hm-sub {
+      margin:4px 0 14px;
+      font-size:12px;
+      color:#75839a;
+    }
     #industry-heatmap .hm-controls {
       display:flex;
       flex-wrap:wrap;
-      gap:10px;
-      align-items:end;
-      margin-bottom:12px;
+      gap:9px;
+      margin:12px 0;
     }
-
     #industry-heatmap .hm-controls label {
       display:grid;
       gap:5px;
       font-size:12px;
-      color:#59677b;
-      min-width:160px;
+      color:#52657e;
+      flex:1;
+      min-width:145px;
     }
-
-    #industry-heatmap .hm-controls select,
-    #industry-heatmap .hm-controls button {
-      padding:11px 12px;
+    #industry-heatmap .hm-controls input,
+    #industry-heatmap .hm-controls select {
+      width:100%;
+      padding:9px 10px;
+      border:1px solid #d7e0ed;
       border-radius:9px;
+      background:white;
+      color:#263a55;
       font:inherit;
     }
-
-    #industry-heatmap .hm-controls select {
-      border:1px solid #d7dee8;
-      background:white;
-      color:#233146;
-    }
-
-    #industry-heatmap .hm-btn {
-      border:0;
-      background:#284f83;
-      color:white;
-      cursor:pointer;
-    }
-
-    #industry-heatmap .hm-btn:disabled {
-      opacity:.55;
-      cursor:wait;
-    }
-
-    #industry-heatmap .hm-status {
-      font-size:13px;
-      color:#64748b;
-      margin:0 0 14px;
-    }
-
-    #industry-heatmap .hm-card {
-      background:white;
-      border:1px solid #e5e9ef;
-      border-radius:16px;
-      padding:16px;
-      box-shadow:0 3px 12px rgba(20,38,70,.035);
+    #industry-heatmap .hm-scroll {
+      max-height:530px;
       overflow:auto;
+      border:1px solid #e8edf4;
+      border-radius:10px;
     }
-
-    #industry-heatmap .hm-caption {
-      font-weight:700;
-      font-size:14px;
-      color:#31425b;
-      margin-bottom:12px;
-    }
-
     #industry-heatmap table {
-      border-collapse:collapse;
-      min-width:920px;
       width:100%;
-      table-layout:fixed;
+      min-width:590px;
+      border-collapse:separate;
+      border-spacing:0;
+      table-layout:auto;
     }
-
     #industry-heatmap th,
     #industry-heatmap td {
-      border:1px solid #e4e8ee;
-      text-align:center;
-      padding:11px 8px;
+      padding:10px 12px;
+      border-bottom:1px solid #edf1f6;
       font-size:13px;
-    }
-
-    #industry-heatmap th {
-      background:#eceff3;
-      color:#2e3b50;
-      font-weight:700;
-    }
-
-    #industry-heatmap .hm-left {
-      background:#eceff3;
       text-align:left;
+    }
+    #industry-heatmap thead th {
+      position:sticky;
+      top:0;
+      z-index:2;
+      background:#eaf0f7;
+      color:#425672;
+      font-weight:750;
+    }
+    #industry-heatmap td.hm-rank {
+      width:54px;
+      color:#7c8ba0;
+    }
+    #industry-heatmap td.hm-name {
+      min-width:145px;
       font-weight:600;
-      min-width:210px;
-      white-space:normal;
-      word-break:keep-all;
     }
-
-    #industry-heatmap .hm-avg-head {
-      background:#e1e7ee;
-      font-weight:700;
-    }
-
-    #industry-heatmap .hm-foot {
+    #industry-heatmap td.hm-code {
+      color:#71819a;
       font-size:12px;
-      color:#6d7c90;
-      margin-top:10px;
-      line-height:1.6;
     }
-
-    @media (max-width:760px) {
+    #industry-heatmap td.hm-diff {
+      white-space:nowrap;
+      font-weight:650;
+    }
+    #industry-heatmap .hm-heat {
+      display:block;
+      min-width:105px;
+      text-align:center;
+      padding:9px 10px;
+      border-radius:7px;
+      font-variant-numeric:tabular-nums;
+      font-weight:750;
+    }
+    #industry-heatmap tr.hm-active td {
+      outline:1px solid #8cb5f9;
+      background:#f7faff;
+    }
+    #industry-heatmap tbody tr {
+      cursor:pointer;
+    }
+    #industry-heatmap tbody tr:hover td {
+      background:#f1f6ff;
+    }
+    #industry-heatmap .hm-detail {
+      background:#f1f5fb;
+      padding:12px;
+      border-radius:10px;
+      color:#425672;
+      font-size:13px;
+      margin-top:12px;
+      line-height:1.7;
+    }
+    #industry-heatmap .hm-legend {
+      display:flex;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:8px;
+      color:#65748b;
+      font-size:12px;
+      margin:8px 0 0;
+    }
+    #industry-heatmap .hm-swatch {
+      display:inline-block;
+      width:15px;
+      height:15px;
+      border-radius:4px;
+      vertical-align:middle;
+    }
+    #industry-heatmap .hm-footnote {
+      font-size:12px;
+      color:#75839a;
+      line-height:1.7;
+      margin:15px 0 0;
+    }
+    @media(max-width:650px) {
       #industry-heatmap .hm-shell {
+        padding:12px;
+      }
+      #industry-heatmap .hm-summary {
+        grid-template-columns:1fr;
+      }
+      #industry-heatmap .hm-card {
         padding:12px;
       }
     }
   `;
   document.head.append(style);
 
-  const section = document.createElement('section');
+  const section = existing ||
+    document.createElement('section');
+
   section.id = 'industry-heatmap';
+
   section.innerHTML = `
     <div class="hm-shell">
-      <div class="hm-head">
-        <h2>산업연관 히트맵</h2>
-        <p class="hm-sub">
-          국산투입계수(Ad)를 기반으로 상위 산업 간 연관구조를 색으로 시각화합니다.
+      <div class="hm-kicker">
+        INDUSTRY INTELLIGENCE · 2023
+      </div>
+
+      <h2 class="hm-title">산업연관효과 히트맵</h2>
+
+      <p class="hm-desc">
+        영향력계수와 감응도계수를 각각의 히트맵으로
+        표시합니다. 산업별 순위, 계수, 전산업 평균(1)
+        대비 차이를 비교해 보세요.
+      </p>
+
+      <div class="hm-toolbar">
+        <button class="hm-run"
+                id="hm-run"
+                type="button">
+          현재 분류 히트맵 분석
+        </button>
+
+        <span class="hm-status"
+              id="hm-status"
+              role="status">
+          먼저 위에서 Excel 자료를 불러오세요.
+        </span>
+      </div>
+
+      <div id="hm-content" hidden>
+        <div class="hm-summary">
+          <div class="hm-stat">
+            <small>영향력계수 · 전산업 평균</small>
+            <strong id="hm-inf-avg">1.0000</strong>
+            <span>후방 연관효과의 상대적 수준</span>
+          </div>
+
+          <div class="hm-stat">
+            <small>감응도계수 · 전산업 평균</small>
+            <strong id="hm-sen-avg">1.0000</strong>
+            <span>전방 연관효과의 상대적 수준</span>
+          </div>
+        </div>
+
+        <div id="hm-inf-card" class="hm-card"></div>
+        <div id="hm-sen-card" class="hm-card"></div>
+
+        <p class="hm-footnote">
+          색상 기준: 파랑은 1 이상, 빨강은 1 미만,
+          1에 가까우면 연한 색입니다.
+          이 표는 산업별 계수를 보여주며,
+          산업 간 거래행렬(Ad) 히트맵과는 다른 분석입니다.
+          순위는 현재 불러온 산업분류 전체 기준입니다.
         </p>
       </div>
+    </div>
+  `;
+
+  if (!existing) {
+    if (anchor.tagName.toLowerCase() === 'main') {
+      anchor.append(section);
+    } else {
+      anchor.insertAdjacentElement(
+        'afterend',
+        section
+      );
+    }
+  }
+
+  let records = [];
+  let epoch = 0;
+
+  const state = {
+    influence: {
+      q: '', sort: 'high', limit: '20', selected: null
+    },
+    sensitivity: {
+      q: '', sort: 'high', limit: '20', selected: null
+    }
+  };
+
+  function reset() {
+    epoch++;
+    records = [];
+
+    $('hm-content').hidden = true;
+    $('hm-status').textContent =
+      '새 분류의 Excel을 불러온 뒤 히트맵 분석을 실행하세요.';
+
+    for (const s of Object.values(state)) {
+      s.q = '';
+      s.sort = 'high';
+      s.limit = '20';
+      s.selected = null;
+    }
+  }
+
+  $('load-basic')?.addEventListener(
+    'click', reset, true
+  );
+
+  $('io-classification')?.addEventListener(
+    'change', reset
+  );
+
+  // 평균 1 기준의 발산형 색상
+  function color(value) {
+    const t = Math.min(
+      1,
+      Math.abs(value - 1) / 0.5
+    );
+
+    const alpha = (0.09 + t * 0.65).toFixed(3);
+
+    return value >= 1
+      ? `rgba(37,99,235,${alpha})`
+      : `rgba(215,75,91,${alpha})`;
+  }
+
+  function rankBy(metric) {
+    const ordered = [...records].sort(
+      (a, b) => b[metric] - a[metric]
+    );
+
+    const ranks = new Map();
+
+    ordered.forEach((r, i) => {
+      const prev = ordered[i - 1];
+
+      ranks.set(
+        r.code,
+        i > 0 && r[metric] === prev[metric]
+          ? ranks.get(prev.code)
+          : i + 1
+      );
+    });
+
+    return ranks;
+  }
+
+  // 영향력계수와 감응도계수 카드를 각각 생성
+  function makeCard(metric, containerId, title, subtitle) {
+    const card = $(containerId);
+
+    const prefix = metric === 'influence'
+      ? 'hm-inf'
+      : 'hm-sen';
+
+    card.innerHTML = `
+      <div class="hm-cardhead">
+        <h3>${title}</h3>
+        <span class="hm-kicker">
+          ${metric === 'influence'
+            ? 'BACKWARD LINKAGE'
+            : 'FORWARD LINKAGE'}
+        </span>
+      </div>
+
+      <p class="hm-sub">${subtitle}</p>
 
       <div class="hm-controls">
         <label>
-          선택 기준
-          <select id="hm-metric">
-            <option value="influence">영향력계수 상위 산업</option>
-            <option value="sensitivity">감응도계수 상위 산업</option>
+          산업 검색
+          <input id="${prefix}-search"
+                 type="search"
+                 placeholder="산업명 또는 코드">
+        </label>
+
+        <label>
+          정렬
+          <select id="${prefix}-sort">
+            <option value="high">계수 높은 순</option>
+            <option value="low">계수 낮은 순</option>
+            <option value="name">산업명 가나다순</option>
           </select>
         </label>
 
         <label>
           표시 개수
-          <select id="hm-count">
-            <option value="8">8개 산업</option>
-            <option value="10">10개 산업</option>
-            <option value="12" selected>12개 산업</option>
-            <option value="15">15개 산업</option>
+          <select id="${prefix}-limit">
+            <option value="20">20개</option>
+            <option value="40">40개</option>
+            <option value="80">80개</option>
+            <option value="all">전체 산업</option>
           </select>
         </label>
-
-        <button id="hm-load" class="hm-btn" type="button">
-          히트맵 불러오기
-        </button>
       </div>
 
-      <p id="hm-status" class="hm-status" role="status">
-        먼저 Excel 자료를 불러온 뒤 히트맵을 실행하세요.
-      </p>
+      <div class="hm-legend">
+        <span class="hm-swatch"
+              style="background:#a8bdf4"></span>
+        1 이상 · 파랑
 
-      <div id="hm-wrap" hidden class="hm-card">
-        <div id="hm-caption" class="hm-caption"></div>
-        <div id="hm-table"></div>
-        <div class="hm-foot">
-          색이 진한 파랑일수록 상대적으로 값이 크고,
-          색이 진한 빨강일수록 상대적으로 값이 작습니다.
-          마지막 열과 마지막 행은 선택된 산업 집합 내 평균입니다.
-        </div>
+        <span class="hm-swatch"
+              style="background:#efb2bb"></span>
+        1 미만 · 빨강
+
+        <span style="color:#8c98aa">
+          기준값 1
+        </span>
       </div>
-    </div>
-  `;
 
-  if (anchor.tagName.toLowerCase() === 'main') {
-    anchor.append(section);
-  } else {
-    anchor.insertAdjacentElement('afterend', section);
+      <p class="hm-sub"
+         id="${prefix}-count"></p>
+
+      <div class="hm-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>순위</th>
+              <th>산업명</th>
+              <th>코드</th>
+              <th>계수 히트맵</th>
+              <th>평균 대비</th>
+            </tr>
+          </thead>
+
+          <tbody id="${prefix}-rows"></tbody>
+        </table>
+      </div>
+
+      <div class="hm-detail"
+           id="${prefix}-detail"
+           role="status">
+        산업 행을 클릭하면 상세 정보를 볼 수 있습니다.
+      </div>
+    `;
+
+    const s = state[metric];
+
+    $(`${prefix}-search`).addEventListener(
+      'input',
+      e => {
+        s.q = e.target.value.trim().toLowerCase();
+        renderRows(metric);
+      }
+    );
+
+    $(`${prefix}-sort`).addEventListener(
+      'change',
+      e => {
+        s.sort = e.target.value;
+        renderRows(metric);
+      }
+    );
+
+    $(`${prefix}-limit`).addEventListener(
+      'change',
+      e => {
+        s.limit = e.target.value;
+        renderRows(metric);
+      }
+    );
+
+    renderRows(metric);
   }
 
-  function hex(v) {
-    const s = Math.round(v).toString(16).padStart(2, '0');
-    return s;
-  }
+  // 히트맵 행 표시
+  function renderRows(metric) {
+    const prefix = metric === 'influence'
+      ? 'hm-inf'
+      : 'hm-sen';
 
-  function mix(a, b, t) {
-    return a + (b - a) * t;
-  }
+    const s = state[metric];
+    const ranks = rankBy(metric);
 
-  function colorFor(value, min, max) {
-    if (!Number.isFinite(value)) return '#ffffff';
-    if (max === min) return '#f4f5f7';
+    let filtered = records.filter(r =>
+      `${r.code} ${r.name}`
+        .toLowerCase()
+        .includes(s.q)
+    );
 
-    const mid = (min + max) / 2;
+    filtered.sort((a, b) => {
+      if (s.sort === 'name') {
+        return a.name.localeCompare(b.name, 'ko');
+      }
 
-    // 낮은 값: 빨강 / 중간: 연회색 / 높은 값: 파랑
-    let r, g, b;
+      if (s.sort === 'low') {
+        return a[metric] - b[metric];
+      }
 
-    if (value <= mid) {
-      const t = (value - min) / Math.max(1e-12, (mid - min));
-      r = mix(224, 240, t);
-      g = mix(76, 242, t);
-      b = mix(76, 245, t);
-    } else {
-      const t = (value - mid) / Math.max(1e-12, (max - mid));
-      r = mix(240, 74, t);
-      g = mix(242, 89, t);
-      b = mix(245, 229, t);
+      return b[metric] - a[metric];
+    });
+
+    const total = filtered.length;
+
+    if (s.limit !== 'all') {
+      filtered = filtered.slice(
+        0,
+        Number(s.limit)
+      );
     }
 
-    return `#${hex(r)}${hex(g)}${hex(b)}`;
-  }
+    $(`${prefix}-count`).textContent =
+      `검색 결과 ${total}개 · ` +
+      `현재 ${filtered.length}개 표시 · ` +
+      `순위는 전체 ${records.length}개 산업 기준`;
 
-  function buildTable(data) {
-    const names = data.names;
-    const codes = data.codes;
-    const matrix = data.matrix;
-    const rowMeans = data.rowMeans;
-    const colMeans = data.colMeans;
-    const overallMean = data.overallMean;
+    const body = $(`${prefix}-rows`);
+    body.replaceChildren();
 
-    const values = matrix.flat();
-    values.push(...rowMeans, ...colMeans, overallMean);
-
-    const min = Math.min(...values);
-    const max = Math.max(...values);
-
-    const table = document.createElement('table');
-
-    const thead = document.createElement('thead');
-    const headRow = document.createElement('tr');
-
-    const corner = document.createElement('th');
-    corner.textContent = '산업';
-    headRow.append(corner);
-
-    names.forEach((name, i) => {
-      const th = document.createElement('th');
-      th.innerHTML = `${name}<br><span style="font-size:11px;color:#6d7c90">${codes[i]}</span>`;
-      headRow.append(th);
-    });
-
-    const avgTh = document.createElement('th');
-    avgTh.className = 'hm-avg-head';
-    avgTh.textContent = '평균';
-    headRow.append(avgTh);
-
-    thead.append(headRow);
-    table.append(thead);
-
-    const tbody = document.createElement('tbody');
-
-    names.forEach((name, r) => {
+    filtered.forEach(r => {
       const tr = document.createElement('tr');
 
-      const left = document.createElement('th');
-      left.className = 'hm-left';
-      left.innerHTML = `${name}<br><span style="font-size:11px;color:#6d7c90">${codes[r]}</span>`;
-      tr.append(left);
+      if (s.selected === r.code) {
+        tr.className = 'hm-active';
+      }
 
-      matrix[r].forEach(v => {
-        const td = document.createElement('td');
-        td.style.background = colorFor(v, min, max);
-        td.textContent = Number(v).toFixed(3);
-        tr.append(td);
+      const rank = document.createElement('td');
+      rank.className = 'hm-rank';
+      rank.textContent = ranks.get(r.code) + '위';
+
+      const name = document.createElement('td');
+      name.className = 'hm-name';
+      name.textContent = r.name;
+
+      const code = document.createElement('td');
+      code.className = 'hm-code';
+      code.textContent = r.code;
+
+      const heatTd = document.createElement('td');
+      const heat = document.createElement('span');
+
+      heat.className = 'hm-heat';
+      heat.style.background = color(r[metric]);
+      heat.textContent = r[metric].toFixed(4);
+
+      heatTd.append(heat);
+
+      const delta = (r[metric] - 1) * 100;
+
+      const diff = document.createElement('td');
+      diff.className = 'hm-diff';
+
+      diff.style.color = delta >= 0
+        ? '#255dc0'
+        : '#bd4859';
+
+      diff.textContent =
+        `${delta >= 0 ? '+' : ''}${delta.toFixed(2)}%`;
+
+      tr.append(
+        rank, name, code, heatTd, diff
+      );
+
+      // 행 클릭 시 선택 산업 상세 표시
+      tr.addEventListener('click', () => {
+        s.selected = r.code;
+
+        $(`${prefix}-detail`).textContent =
+          `${r.name} (${r.code}) · ` +
+          `${metric === 'influence'
+            ? '영향력계수'
+            : '감응도계수'} ` +
+          `${r[metric].toFixed(4)} · ` +
+          `전체 ${ranks.get(r.code)}위 / ` +
+          `${records.length}개 · ` +
+          `평균 대비 ${delta >= 0 ? '+' : ''}` +
+          `${delta.toFixed(2)}%`;
+
+        renderRows(metric);
       });
 
-      const avgTd = document.createElement('td');
-      avgTd.className = 'hm-avg-head';
-      avgTd.style.background = '#f0f3f7';
-      avgTd.textContent = Number(rowMeans[r]).toFixed(3);
-      tr.append(avgTd);
-
-      tbody.append(tr);
+      body.append(tr);
     });
 
-    const totalRow = document.createElement('tr');
-
-    const totalLeft = document.createElement('th');
-    totalLeft.className = 'hm-left';
-    totalLeft.textContent = '평균';
-    totalRow.append(totalLeft);
-
-    colMeans.forEach(v => {
+    if (!filtered.length) {
+      const tr = document.createElement('tr');
       const td = document.createElement('td');
-      td.className = 'hm-avg-head';
-      td.style.background = '#f0f3f7';
-      td.textContent = Number(v).toFixed(3);
-      totalRow.append(td);
-    });
 
-    const all = document.createElement('td');
-    all.className = 'hm-avg-head';
-    all.style.background = '#e6ebf2';
-    all.textContent = Number(overallMean).toFixed(3);
-    totalRow.append(all);
+      td.colSpan = 5;
+      td.textContent = '검색된 산업이 없습니다.';
 
-    tbody.append(totalRow);
-    table.append(tbody);
-
-    return table;
+      tr.append(td);
+      body.append(tr);
+    }
   }
 
-  el('hm-load').addEventListener('click', async () => {
-    if (el('sheet').disabled || typeof call !== 'function') {
-      el('hm-status').textContent =
-        '먼저 위에서 Excel 자료를 불러오세요.';
+  // 히트맵 실행
+  $('hm-run').addEventListener('click', async () => {
+    if (
+      $('sheet')?.disabled ||
+      typeof call !== 'function'
+    ) {
+      $('hm-status').textContent =
+        '먼저 위에서 산업분류 Excel을 불러오세요.';
       return;
     }
 
-    const button = el('hm-load');
+    const token = ++epoch;
+    const button = $('hm-run');
+
     button.disabled = true;
-    el('hm-status').textContent = '히트맵 계산 중…';
+
+    $('hm-status').textContent =
+      '영향력계수·감응도계수 분석 중…';
 
     try {
-      const metric = el('hm-metric').value;
-      const count = Number(el('hm-count').value);
+      const data = await call('analyze', {});
 
-      const data = await call('heatmap', { metric, count });
+      if (token !== epoch) return;
 
-      el('hm-caption').textContent =
-        (metric === 'influence'
-          ? '영향력계수 상위 '
-          : '감응도계수 상위 ') +
-        data.count +
-        '개 산업의 국산투입계수(Ad) 히트맵';
+      if (
+        !Array.isArray(data.results) ||
+        !data.results.length
+      ) {
+        throw Error('분석 결과가 없습니다.');
+      }
 
-      const tableHost = el('hm-table');
-      tableHost.replaceChildren(buildTable(data));
+      records = data.results.map(r => ({
+        code: String(r.code),
+        name: String(r.name),
+        influence: Number(r.influence),
+        sensitivity: Number(r.sensitivity)
+      }));
 
-      el('hm-wrap').hidden = false;
-      el('hm-status').textContent =
-        '히트맵 생성 완료 · 선택 산업 수: ' + data.count + '개';
+      if (records.some(r =>
+        !Number.isFinite(r.influence) ||
+        !Number.isFinite(r.sensitivity)
+      )) {
+        throw Error('유효하지 않은 계수가 있습니다.');
+      }
 
-    } catch (error) {
-      el('hm-status').textContent =
-        '히트맵 생성 실패: ' + error.message;
+      for (const s of Object.values(state)) {
+        s.q = '';
+        s.sort = 'high';
+        s.limit = '20';
+        s.selected = null;
+      }
+
+      const avg = metric => (
+        records.reduce(
+          (sum, r) => sum + r[metric],
+          0
+        ) / records.length
+      ).toFixed(4);
+
+      $('hm-inf-avg').textContent =
+        avg('influence');
+
+      $('hm-sen-avg').textContent =
+        avg('sensitivity');
+
+      makeCard(
+        'influence',
+        'hm-inf-card',
+        '01 · 영향력계수 히트맵',
+        '후방 연관효과 · 한 산업의 최종수요 증가가 유발하는 상대적 생산효과'
+      );
+
+      makeCard(
+        'sensitivity',
+        'hm-sen-card',
+        '02 · 감응도계수 히트맵',
+        '전방 연관효과 · 모든 산업의 최종수요 증가에 대한 상대적 생산 반응'
+      );
+
+      $('hm-content').hidden = false;
+
+      $('hm-status').textContent =
+        `분석 완료 · ${records.length}개 산업 · ` +
+        '두 히트맵 준비됨';
+
+    } catch (e) {
+      if (token === epoch) {
+        $('hm-status').textContent =
+          '분석 실패: ' + e.message;
+      }
 
     } finally {
       button.disabled = false;
