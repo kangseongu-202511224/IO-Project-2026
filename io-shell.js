@@ -1230,7 +1230,23 @@
       }
     }
   }
+  window.IO_REANALYZE = async () => {
+    const previous = [...state.selection];
 
+    await analyze();
+
+    previous.forEach(code => {
+      if (
+        state.rows.some(
+          r => r.code === code
+        )
+      ) {
+        state.selection.add(code);
+      }
+    });
+
+    renderCompare();
+  };
   function invalidate() {
     state.generation++;
     state.rows = [];
