@@ -398,48 +398,7 @@ function companies(r) {
     </div>
   `;
 }
-    const matched = classify(r.name);
-    const names = matched?.names || [];
-
-    const explanation = names.length
-      ? "한국은행 주요 제조업 자료를 참고한 기업 예시입니다. 세부 품목과의 정확한 일치 여부는 별도 확인이 필요합니다."
-      : "검증된 기업 예시를 아직 확보하지 못했습니다. 임의로 표시하지 않습니다.";
-
-    const tags = names.length
-      ? names.map(
-          name => `<b>${safe(name)}</b>`
-        ).join("")
-      : `<span class="pm-muted">
-           등록된 기업 예시 없음
-         </span>`;
-
-    return `
-      <div class="pm-company">
-
-        <div class="pm-company-top">
-          <strong>해당 산업의 예시 기업</strong>
-          <span>
-            ${names.length ? "참고 자료 있음" : "미검증"}
-          </span>
-        </div>
-
-        <div class="pm-tags">${tags}</div>
-
-        <p>${explanation}</p>
-
-        ${
-          names.length
-            ? `<a href="${SOURCE}"
-                  target="_blank"
-                  rel="noopener noreferrer">
-                 한국은행 산업별 공급망 자료 확인 ↗
-               </a>`
-            : ""
-        }
-      </div>
-    `;
-  }
-
+   
   // ─────────────────────────────
   // 선택 산업 상세
   // ─────────────────────────────
