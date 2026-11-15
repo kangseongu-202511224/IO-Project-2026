@@ -8,7 +8,7 @@ def emit(x):
     return json.dumps(x, ensure_ascii=False, allow_nan=False)
 
 def initialize(raw):
-    global book, codes, names, L, M, V, AD, AM, sheets, valid
+    global book, codes, names, L, M, V, AD, AM, sheets, valid, v
 
     wb = openpyxl.load_workbook(
         io.BytesIO(bytes(raw)),
