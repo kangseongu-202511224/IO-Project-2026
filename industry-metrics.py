@@ -15,12 +15,24 @@ def analyze_extended_metrics():
             "먼저 검증된 Excel 자료를 불러오세요."
         )
 
+
     n = len(codes)
     eps = 1e-12
+
+    # 직접 부가가치계수 계산
+    diagonal_L = np.diag(L)
+
+    if np.any(np.abs(diagonal_L) < eps):
+        raise ValueError(
+            "생산유발계수의 대각원소를 확인하세요."
+        )
+
+    v = np.diag(V) / diagonal_L
 
     A = AD + AM
 
     lc = L.sum(axis=0)
+
     lr = L.sum(axis=1)
     mc = M.sum(axis=0)
     vc = V.sum(axis=0)
