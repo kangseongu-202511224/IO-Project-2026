@@ -95,7 +95,7 @@ async function handle({ id, type, payload }) {
 
       } else if (type === 'metrics') {
         const response = await fetch(
-          './industry-metrics.py?v=1'
+          './industry-metrics.py?v=2'
         );
 
         if (!response.ok) {
