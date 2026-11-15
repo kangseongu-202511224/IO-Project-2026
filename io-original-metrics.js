@@ -457,7 +457,9 @@
       document.createElement("label");
 
     title.textContent =
-      "첫 번째 분석 지표";
+  id === "quadrant"
+    ? "X축 분석 지표"
+    : "분석 지표";
 
     const x =
       document.createElement("select");
@@ -468,8 +470,10 @@
     const title2 =
       document.createElement("label");
 
-    title2.textContent =
-      "두 번째 분석 지표";
+    title2.textContent = "Y축 분석 지표";
+
+// 4분면 맵에서만 두 번째 지표 표시
+title2.hidden = id !== "quadrant";
 
     const y =
       document.createElement("select");
