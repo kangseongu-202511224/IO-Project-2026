@@ -1,1 +1,670 @@
 
+/* IO INTELLIGENCE — UI DESIGN */
+
+body.io-rebuilt {
+  background: #f4f7fb;
+  color: #1b2b43;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+body.io-rebuilt > header,
+body.io-rebuilt > nav,
+body.io-rebuilt > main,
+body.io-rebuilt > footer {
+  display: none !important;
+}
+
+body.io-rebuilt #io-app {
+  display: grid;
+  grid-template-columns: 235px minmax(0, 1fr) 72px;
+  min-height: 100vh;
+  max-width: none;
+  margin: 0;
+}
+
+#io-app * {
+  box-sizing: border-box;
+}
+
+/* 왼쪽 메뉴 */
+
+#io-app .io-left {
+  background: #fff;
+  border-right: 1px solid #e3e8f1;
+  padding: 22px 13px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: auto;
+  z-index: 5;
+}
+
+#io-app .io-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 10px 25px;
+  color: #183b75;
+  font-size: 16px;
+  font-weight: 850;
+  letter-spacing: -.4px;
+}
+
+#io-app .io-logo-mark {
+  background: #1b4a8b;
+  color: #fff;
+  padding: 9px;
+  border-radius: 11px;
+}
+
+#io-app .io-sub {
+  display: block;
+  font-size: 10px;
+  color: #98a7bd;
+  font-weight: 600;
+  letter-spacing: 1.1px;
+}
+
+#io-app .io-menu-label {
+  margin: 17px 12px 7px;
+  color: #9aa8bc;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.15px;
+}
+
+#io-app .io-menu {
+  display: block;
+  width: 100%;
+  padding: 12px 13px;
+  margin: 2px 0;
+  background: transparent;
+  border: 0;
+  border-radius: 10px;
+  color: #596c86;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+  white-space: normal;
+}
+
+#io-app .io-menu:hover {
+  background: #f1f5fb;
+  color: #193f76;
+}
+
+#io-app .io-menu[aria-current="page"] {
+  background: #e9f0fb;
+  color: #1b4b8e;
+  font-weight: 850;
+}
+
+#io-app .io-menu span {
+  margin-right: 11px;
+  font-size: 16px;
+  vertical-align: -1px;
+}
+
+/* 중앙 화면 */
+
+#io-app .io-main {
+  min-width: 0;
+  padding: 23px clamp(14px, 2.2vw, 36px) 65px;
+  max-width: 1700px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+#io-app .io-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+#io-app .io-breadcrumb {
+  font-size: 12px;
+  color: #8997ab;
+  font-weight: 650;
+}
+
+#io-app .io-date {
+  color: #8190a7;
+  font-size: 12px;
+}
+
+/* 산업분류 불러오기 */
+
+#io-app .io-config {
+  background: #fff;
+  border: 1px solid #e1e8f1;
+  border-radius: 16px;
+  padding: 15px 18px;
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0 0 23px;
+  box-shadow: 0 4px 20px #1a3e7507;
+}
+
+#io-app .io-config strong {
+  display: block;
+  font-size: 12px;
+  color: #71839a;
+  margin-bottom: 6px;
+}
+
+#io-app .io-config select {
+  width: 220px;
+  margin: 0;
+  background: #f8faff;
+  border: 1px solid #dce5f0;
+}
+
+#io-app .io-config button {
+  margin: 0;
+  background: #1d4d8e;
+  border-radius: 9px;
+  padding: 11px 19px;
+  white-space: nowrap;
+}
+
+#io-app .io-config .io-file-status {
+  font-size: 12px;
+  color: #61738d;
+  flex: 1;
+  min-width: 180px;
+  line-height: 1.55;
+}
+
+/* 페이지 전환 */
+
+#io-app .io-view {
+  display: none;
+}
+
+#io-app .io-view.io-active {
+  display: block;
+}
+
+#io-app .io-pagehead {
+  margin: 0 0 18px;
+}
+
+#io-app .io-pagehead h1 {
+  font-size: clamp(23px, 2.5vw, 31px);
+  line-height: 1.35;
+  margin: 3px 0 7px;
+  color: #192d4c;
+}
+
+#io-app .io-pagehead p {
+  font-size: 13px;
+  color: #8491a6;
+  margin: 0;
+}
+
+/* 카드 */
+
+#io-app .io-block {
+  background: #fff;
+  border: 1px solid #e2e9f3;
+  border-radius: 15px;
+  padding: 22px;
+  box-shadow: 0 4px 18px #193b6a08;
+  margin-bottom: 17px;
+}
+
+#io-app .io-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 13px;
+  margin: 15px 0;
+}
+
+#io-app .io-stat {
+  background: #fff;
+  border: 1px solid #e2e9f3;
+  border-radius: 13px;
+  padding: 18px;
+}
+
+#io-app .io-stat small {
+  display: block;
+  color: #8191a6;
+  font-size: 12px;
+  margin-bottom: 7px;
+}
+
+#io-app .io-stat strong {
+  font-size: 23px;
+  color: #193d72;
+  font-variant-numeric: tabular-nums;
+}
+
+#io-app .io-stat em {
+  display: block;
+  font-size: 11px;
+  color: #9aa7b7;
+  font-style: normal;
+}
+
+#io-app .io-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* 검색 및 분석 컨트롤 */
+
+#io-app .io-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: end;
+  margin: 15px 0;
+}
+
+#io-app .io-toolbar label {
+  font-size: 12px;
+  color: #657791;
+  margin: 0;
+  min-width: 160px;
+  flex: 1;
+}
+
+#io-app .io-toolbar input,
+#io-app .io-toolbar select {
+  margin-top: 5px;
+  border-color: #dce5ef;
+  background: #fff;
+  font-size: 13px;
+}
+
+#io-app .io-primary {
+  background: #204f90;
+  color: #fff;
+  border: 0;
+  border-radius: 9px;
+  padding: 11px 16px;
+  margin: 0;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+#io-app .io-soft {
+  background: #eaf1fb;
+  color: #254d85;
+  border: 0;
+  border-radius: 9px;
+  padding: 9px 12px;
+  margin: 0;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+#io-app .io-help {
+  color: #8090a6;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+/* 순위 막대그래프 */
+
+#io-app .io-barline {
+  display: grid;
+  grid-template-columns: minmax(95px, 165px) minmax(0, 1fr) 75px;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0;
+  font-size: 12px;
+}
+
+#io-app .io-barline .name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#io-app .io-track {
+  height: 11px;
+  border-radius: 12px;
+  background: #edf2f8;
+  overflow: hidden;
+}
+
+#io-app .io-fill {
+  height: 100%;
+  border-radius: 12px;
+  background: #3c74bf;
+}
+
+#io-app .io-fill.teal {
+  background: #19a294;
+}
+
+#io-app .io-fill.orange {
+  background: #e09a45;
+}
+
+#io-app .io-fill.pink {
+  background: #d77496;
+}
+
+/* 오른쪽 메뉴 */
+
+#io-app .io-right {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  background: #fff;
+  border-left: 1px solid #e3e8f1;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 22px 9px;
+  z-index: 7;
+}
+
+#io-app .io-right button {
+  width: 54px;
+  min-height: 55px;
+  font-size: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: #62758f;
+  border: 0;
+  border-radius: 10px;
+  padding: 5px;
+  margin: 0;
+  cursor: pointer;
+}
+
+#io-app .io-right button b {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+#io-app .io-right button[aria-pressed="true"] {
+  background: #eaf1fc;
+  color: #20528e;
+}
+
+/* 오른쪽 팝업 패널 */
+
+#io-app .io-drawer {
+  position: fixed;
+  right: 78px;
+  top: 16px;
+  bottom: 16px;
+  width: min(355px, calc(100vw - 92px));
+  overflow: auto;
+  background: #fff;
+  border: 1px solid #dce5f0;
+  box-shadow: 0 15px 50px #21395422;
+  border-radius: 17px;
+  z-index: 15;
+  padding: 18px;
+}
+
+#io-app .io-drawer[hidden] {
+  display: none !important;
+}
+
+#io-app .io-drawer h2 {
+  margin: 0 0 12px;
+  font-size: 18px;
+}
+
+#io-app .io-drawer-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#io-app .io-drawer-top button {
+  background: #f0f4f8;
+  color: #52677f;
+  border: 0;
+  border-radius: 8px;
+  margin: 0;
+  padding: 6px 10px;
+}
+
+#io-app .io-drawer-item {
+  padding: 12px 4px;
+  border-bottom: 1px solid #ecf0f6;
+  font-size: 13px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#io-app .io-drawer-item button {
+  background: #eaf1fc;
+  color: #23518a;
+  font-size: 12px;
+  padding: 7px 9px;
+  border-radius: 7px;
+  margin: 0;
+}
+
+/* 분석 테이블 */
+
+#io-app .io-tablewrap {
+  overflow: auto;
+  max-height: 560px;
+}
+
+#io-app table {
+  width: 100%;
+}
+
+#io-app .io-tablewrap th {
+  position: sticky;
+  top: 0;
+  background: #eff4fa;
+}
+
+#io-app .io-tablewrap td,
+#io-app .io-tablewrap th {
+  padding: 9px 10px;
+  font-size: 12px;
+}
+
+#io-app .io-tablewrap tr {
+  cursor: pointer;
+}
+
+#io-app .io-tablewrap tr:hover {
+  background: #f4f8fe;
+}
+
+/* 기존 분석 화면 보존 */
+
+#io-app #industry-detail,
+#io-app #industry-heatmap,
+#io-app #industry-treemap,
+#io-app #explorer,
+#io-app #simulation,
+#io-app #industry-analysis {
+  margin: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
+/* 4분면과 듀얼 히트맵 분리 */
+
+#io-app #industry-heatmap .main-layout,
+#io-app #industry-heatmap .heatmap-card {
+  display: none;
+}
+
+#io-app[data-view="quadrant"]
+#industry-heatmap .main-layout {
+  display: grid;
+}
+
+#io-app[data-view="dual"]
+#industry-heatmap .heatmap-card {
+  display: block;
+}
+
+#io-app #industry-heatmap .dashboard {
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+
+#io-app #industry-heatmap .header {
+  margin-bottom: 10px;
+}
+
+#io-app #industry-heatmap .header .run-button {
+  flex-shrink: 0;
+}
+
+#io-app #industry-treemap {
+  margin: 0;
+}
+
+#io-app #industry-treemap .shell {
+  margin: 0;
+}
+
+#io-app #explorer > .section-heading #load-basic {
+  display: none;
+}
+
+#io-app .loading-status {
+  margin: 10px 0;
+  background: #fff;
+}
+
+#io-app [hidden] {
+  display: none !important;
+}
+
+/* 태블릿 */
+
+@media (max-width: 1150px) {
+  body.io-rebuilt #io-app {
+    grid-template-columns: 195px minmax(0, 1fr) 64px;
+  }
+
+  #io-app .io-main {
+    padding: 16px;
+  }
+
+  #io-app .io-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  #io-app .io-two {
+    grid-template-columns: 1fr;
+  }
+
+  #io-app .io-drawer {
+    right: 67px;
+  }
+}
+
+/* 모바일 */
+
+@media (max-width: 760px) {
+  body.io-rebuilt #io-app {
+    display: block;
+    padding-bottom: 61px;
+  }
+
+  #io-app .io-left {
+    position: fixed;
+    bottom: 0;
+    top: auto;
+    left: 0;
+    right: 0;
+    height: 60px;
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-top: 1px solid #dae4f0;
+    border-right: 0;
+    padding: 4px;
+    gap: 3px;
+    z-index: 20;
+  }
+
+  #io-app .io-left .io-logo,
+  #io-app .io-menu-label {
+    display: none;
+  }
+
+  #io-app .io-menu {
+    min-width: 86px;
+    font-size: 10px;
+    text-align: center;
+    padding: 5px 2px;
+  }
+
+  #io-app .io-menu span {
+    display: block;
+    font-size: 16px;
+    margin: 0;
+  }
+
+  #io-app .io-right {
+    height: auto;
+    position: fixed;
+    top: auto;
+    bottom: 68px;
+    right: 10px;
+    flex-direction: row;
+    width: auto;
+    padding: 5px;
+    border-radius: 12px;
+    border: 1px solid #e1e8f1;
+    box-shadow: 0 8px 25px #0002;
+  }
+
+  #io-app .io-right button {
+    width: 49px;
+    min-height: 42px;
+    font-size: 9px;
+  }
+
+  #io-app .io-right button b {
+    font-size: 16px;
+  }
+
+  #io-app .io-drawer {
+    right: 10px;
+    top: 10px;
+    bottom: 122px;
+    width: min(350px, calc(100vw - 20px));
+  }
+
+  #io-app .io-main {
+    padding: 13px;
+  }
+
+  #io-app .io-config {
+    padding: 12px;
+  }
+
+  #io-app .io-config select {
+    width: 100%;
+  }
+}
+
