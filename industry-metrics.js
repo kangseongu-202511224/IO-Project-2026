@@ -302,27 +302,7 @@
   document.head.append(style);
 
   // 기존 히트맵과 확장 히트맵 전환 버튼
-  const tabs = document.createElement("div");
-  tabs.id = "io-metrics-tabbar";
-
-  tabs.innerHTML = `
-    <button type="button"
-      id="im-tab-old"
-      aria-selected="true">
-      영향력·감응도
-    </button>
-
-    <button type="button"
-      id="im-tab-new"
-      aria-selected="false">
-      확장 산업연관 지표 (36)
-    </button>
-  `;
-
-  host.insertBefore(
-    tabs,
-    old || host.firstChild
-  );
+ 
 
   const panel = document.createElement("section");
   panel.id = "io-metrics-panel";
@@ -357,7 +337,7 @@
 
     <div id="im-results" hidden>
       <div class="im-card">
-
+    <div id="im-groups" class="im-groups"></div>
         <div class="im-controls">
           <label>
             지표 분류
@@ -417,10 +397,15 @@
     </div>
   `;
 
-  tabs.insertAdjacentElement(
-    "afterend",
-    panel
+host.prepend(panel);
+
+if (old) {
+  old.style.setProperty(
+    "display",
+    "none",
+    "important"
   );
+}
 
   const el = id =>
     panel.querySelector("#im-" + id);
@@ -457,48 +442,74 @@
     return value == null ? "—" : fmt(value);
   }
 
-  // 탭 변경
-  function showNew(isNew) {
-    panel.hidden = !isNew;
-
-    if (old) {
-      old.style.display = isNew ? "none" : "";
-    }
-
-    tabs.querySelector("#im-tab-old")
-      .setAttribute(
-        "aria-selected",
-        String(!isNew)
-      );
-
-    tabs.querySelector("#im-tab-new")
-      .setAttribute(
-        "aria-selected",
-        String(isNew)
-      );
-  }
-
-  tabs.querySelector("#im-tab-old").onclick =
-    () => showNew(false);
-
-  tabs.querySelector("#im-tab-new").onclick =
-    () => showNew(true);
-
+  
   // 분류별 지표 목록
-  function populateGroups() {
-    const groups = [
-      ...new Set(
-        data.indicators.map(m => m.group)
-      )
-    ];
+  
+function populateGroups() {
+  const groups = [
+    ...new Set(
+      data.indicators.map(m => m.group)
+    )
+  ];
 
-    el("group").replaceChildren(
-      ...groups.map(group => {
-        const o = text("option", group);
-        o.value = group;
-        return o;
-      })
-    );
+  el("group").replaceChildren(
+    ...groups.map(group => {
+      const option = text("option", group);
+      option.value = group;
+      return option;
+    })
+  );
+
+  const names = {
+    "생산유발": "생산유발 분석",
+    "수입유발": "수입유발 분석",
+    "부가가치": "부가가치 분석",
+    "투입구조": "투입구조 분석",
+    "파급분포": "파급분포 분석"
+  };
+
+  const container = el("groups");
+  container.replaceChildren();
+
+  groups.forEach(group => {
+    const count = data.indicators.filter(
+      m => m.group === group
+    ).length;
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "im-group-button";
+
+    button.textContent =
+      `${names[group] || group} · ${count}개`;
+
+    button.dataset.group = group;
+
+    button.addEventListener("click", () => {
+      el("group").value = group;
+      populateMetrics();
+      updateGroupButtons();
+    });
+
+    container.append(button);
+  });
+
+  populateMetrics();
+  updateGroupButtons();
+}
+
+function updateGroupButtons() {
+  const active = el("group").value;
+
+  el("groups").querySelectorAll("button")
+    .forEach(button => {
+      button.setAttribute(
+        "aria-pressed",
+        String(button.dataset.group === active)
+      );
+    });
+}
+
 
     populateMetrics();
   }
@@ -873,7 +884,10 @@
   };
 
   // 각 컨트롤
-  el("group").onchange = populateMetrics;
+  el("group").onchange = () => {
+  populateMetrics();
+  updateGroupButtons();
+};
   el("metric").onchange = draw;
   el("limit").onchange = draw;
   el("search").oninput = draw;
