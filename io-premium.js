@@ -363,25 +363,25 @@ function companies(r) {
   // 먼저 산업코드별 참고기업 데이터 사용.
   // 통합분류에서는 기존 산업명 규칙을 보조적으로 사용.
   const matched =
-    window.IO_COMPANY_LOOKUP?.(r.code) ||
-    classify(r.name);
+  window.IO_COMPANY_LOOKUP?.(r.code, r.name) ||
+  classify(r.name);
 
   const names = matched?.names || [];
 
   // 쉼표 + 한 칸 띄어쓰기로 표시
-  const companyText = names.length
-    ? names.map(name => safe(name)).join(", ")
-    : "기업 예시 조사 중";
+ const companyText = names.length
+  ? names.map(name => safe(name)).join(", ")
+  : "기업·기관 사례 추가 검증 필요";
 
   return `
     <div class="pm-company">
       <div class="pm-company-top">
         <strong>해당 산업의 예시 기업</strong>
-        <span>
-          ${names.length
-            ? "업종 참고기업"
-            : "미등록"}
-        </span>
+<span>
+  ${names.length
+    ? safe(matched?.status || "업종 참고기업")
+    : "미등록"}
+</span>
       </div>
 
       <div class="pm-tags">
