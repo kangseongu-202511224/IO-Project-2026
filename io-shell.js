@@ -241,7 +241,7 @@
     home: "홈 대시보드",
     explorer: "원자료 탐색",
     quadrant: "산업연관 4분면 맵",
-    dual: "영향력·감응도 듀얼 히트맵",
+    dual: "산업연관 지표 종합 분석",
     treemap: "산업별 트리맵",
     compare: "관심 산업 비교 분석",
     ranking: "산업별 순위 분석",
