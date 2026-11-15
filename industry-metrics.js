@@ -350,9 +350,9 @@
   // 기존 히트맵과 확장 히트맵 전환 버튼
  
 
-  const panel = document.createElement("section");
-  panel.id = "io-metrics-panel";
-  panel.hidden = true;
+ const panel = document.createElement("section");
+panel.id = "io-metrics-panel";
+panel.hidden = false;
 
   panel.innerHTML = `
     <div class="im-card">
@@ -555,11 +555,7 @@ function updateGroupButtons() {
       );
     });
 }
-
-
-    populateMetrics();
-  }
-
+ 
   function populateMetrics() {
     const group = el("group").value;
 
