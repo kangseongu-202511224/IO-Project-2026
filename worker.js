@@ -93,6 +93,27 @@ async function handle({ id, type, payload }) {
           'analyze_industries()'
         );
 
+      } else if (type === 'metrics') {
+        const response = await fetch(
+          './industry-metrics.py?v=1'
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            '확장 지표 계산 파일 다운로드 실패 (HTTP ' +
+            response.status + ')'
+          );
+        }
+
+        await py.runPythonAsync(
+          await response.text()
+        );
+
+        result = py.runPython(
+          'analyze_extended_metrics()'
+        );
+
+
       } else if (type === 'heatmap') {
         py.globals.set(
           'heatmap_input',
