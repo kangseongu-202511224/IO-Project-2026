@@ -30,7 +30,7 @@ async function handle({ id, type, payload }) {
       }
 
       const response = await fetch(
-        './model.py?v=20261113-2'
+        './model.py?v=20261115-2'
       );
 
       if (!response.ok) {
