@@ -198,6 +198,10 @@
     document.createElement("style");
 
   style.textContent = `
+
+    .io-36-chooser label[hidden] {
+      display: none !important;
+    }
     .io-36-chooser {
       margin: 12px 0 18px;
       border: 1px solid #d9e5f3;
@@ -371,12 +375,18 @@
   async function activate(toolbar) {
     if (busy) return;
 
-    const requested = dataset
-      ? {
-          x: toolbar.x.value,
-          y: toolbar.y.value
-        }
-      : { ...selected };
+    const isQuadrant = toolbar.panel.closest(
+  "#io-view-quadrant"
+) !== null;
+
+const requested = dataset
+  ? {
+      x: toolbar.x.value,
+      y: isQuadrant
+        ? toolbar.y.value
+        : toolbar.x.value
+    }
+  : { ...selected };
 
     busy = true;
     lastError = "";
@@ -400,12 +410,11 @@
 
       const next = requested;
 
-      if (next.x === next.y) {
-        throw Error(
-          "X축과 Y축에는 서로 다른 " +
-          "지표를 선택하세요."
-        );
-      }
+     if (isQuadrant && next.x === next.y) {
+  throw Error(
+    "4분면 맵에서는 서로 다른 두 지표를 선택하세요."
+  );
+}
 
       const mx = mean(next.x);
       const my = mean(next.y);
