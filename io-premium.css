@@ -1,0 +1,622 @@
+
+/* IO INTELLIGENCE · Premium Interface */
+
+body.io-rebuilt {
+  background: #f5f7fb;
+  color: #182b46;
+  font-family:
+    Inter, Pretendard, "Noto Sans KR",
+    system-ui, sans-serif;
+  letter-spacing: -.012em;
+}
+
+body.io-rebuilt #io-app {
+  grid-template-columns:
+    228px minmax(0, 1fr) 70px;
+  min-height: 100vh;
+}
+
+/* 왼쪽 사이드바 */
+
+#io-app .io-left {
+  background: #fff;
+  border-right: 1px solid #e8edf4;
+  padding: 26px 13px;
+  box-shadow: 4px 0 22px #19365a06;
+}
+
+#io-app .io-logo {
+  font-size: 15px;
+  color: #102e56;
+  letter-spacing: -.035em;
+  padding: 0 13px 32px;
+}
+
+#io-app .io-logo-mark {
+  background: linear-gradient(
+    135deg, #194e96, #0b2c58
+  );
+  box-shadow: 0 8px 15px #24528d29;
+  border-radius: 12px;
+  padding: 10px 11px;
+}
+
+#io-app .io-menu-label {
+  font-size: 10px;
+  color: #9ca9bd;
+  letter-spacing: 1.5px;
+  margin-top: 19px;
+}
+
+#io-app .io-menu {
+  font-size: 13px;
+  border-radius: 10px;
+  padding: 13px 14px;
+  color: #687a92;
+  font-weight: 620;
+  transition: background .15s;
+}
+
+#io-app .io-menu[aria-current="page"] {
+  color: #174580;
+  background: #edf4fe;
+  box-shadow: inset 3px 0 0 #2b67b5;
+}
+
+/* 중앙 화면 */
+
+#io-app .io-main {
+  padding: 27px clamp(15px, 2.2vw, 38px) 65px;
+  max-width: 1750px;
+}
+
+#io-app .io-top {
+  margin-bottom: 17px;
+}
+
+#io-app .io-breadcrumb {
+  font-size: 12px;
+  color: #7288a5;
+}
+
+#io-app .io-config {
+  padding: 18px 22px;
+  border: 1px solid #e4eaf4;
+  border-radius: 16px;
+  box-shadow: 0 10px 34px #112f5809;
+}
+
+#io-app .io-config button {
+  background: linear-gradient(
+    105deg, #123d73, #1e61a8
+  );
+  box-shadow: 0 6px 14px #1e579b25;
+}
+
+#io-app .io-pagehead h1 {
+  font-size: 30px;
+  letter-spacing: -.045em;
+  color: #152d4e;
+}
+
+#io-app .io-block,
+#io-app .io-stat {
+  border-color: #e3eaf5;
+  box-shadow: 0 7px 23px #123c7207;
+  border-radius: 15px;
+}
+
+/* 오른쪽 메뉴 */
+
+#io-app .io-right {
+  border-left: 1px solid #e8edf4;
+  background: #fff;
+  box-shadow: -4px 0 22px #19365a06;
+}
+
+#io-app .io-right button[aria-pressed="true"] {
+  color: #154b90;
+  background: #edf3ff;
+}
+
+#io-app .io-drawer {
+  border: 1px solid #e0e9f5;
+  box-shadow: 0 24px 70px #102f6035;
+}
+
+#io-app .io-toolbar input:focus,
+#io-app .io-toolbar select:focus,
+#io-app .io-config select:focus {
+  border-color: #3675c3;
+  outline: 3px solid #2a6ab51b;
+}
+
+/* 이전 히트맵과 이전 매트릭스 숨김 */
+
+#io-app[data-view="dual"] #industry-heatmap,
+#io-app #industry-matrix {
+  display: none !important;
+}
+
+/* 새 매트릭스 */
+
+#premium-matrix,
+#premium-matrix * {
+  box-sizing: border-box;
+}
+
+#premium-matrix {
+  color: #172b49;
+}
+
+#premium-matrix .pm-head {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 24px 26px;
+  background: white;
+  border: 1px solid #e2e9f4;
+  border-radius: 18px;
+  box-shadow: 0 7px 24px #12365d08;
+}
+
+#premium-matrix .pm-eyebrow {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #4a75b4;
+  font-weight: 800;
+}
+
+#premium-matrix h2 {
+  font-size: 23px;
+  letter-spacing: -.035em;
+  margin: 7px 0;
+  color: #172f50;
+}
+
+#premium-matrix p {
+  font-size: 12px;
+  line-height: 1.7;
+  color: #8291a7;
+  margin: 5px 0;
+}
+
+#premium-matrix #pm-load {
+  background: #174b87;
+  color: #fff;
+  border: 0;
+  border-radius: 10px;
+  padding: 12px 19px;
+  font-size: 13px;
+  font-weight: 750;
+  margin: 0;
+}
+
+#premium-matrix #pm-load:disabled {
+  opacity: .6;
+}
+
+#premium-matrix .pm-message {
+  font-size: 12px;
+  color: #74849b;
+  margin: 12px 4px;
+}
+
+/* 분석 요약 카드 */
+
+#premium-matrix .pm-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 15px 0;
+}
+
+#premium-matrix .pm-summary > div {
+  background: #fff;
+  border: 1px solid #e2e9f4;
+  border-radius: 15px;
+  padding: 16px 20px;
+  box-shadow: 0 7px 20px #12365d08;
+}
+
+#premium-matrix .pm-summary small {
+  display: block;
+  font-size: 11px;
+  color: #8190a5;
+  margin-bottom: 7px;
+}
+
+#premium-matrix .pm-summary strong {
+  font-size: 23px;
+  letter-spacing: -.03em;
+  font-variant-numeric: tabular-nums;
+  color: #214d82;
+}
+
+/* 분석 컨트롤 */
+
+#premium-matrix .pm-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 17px 0;
+}
+
+#premium-matrix .pm-segment {
+  display: flex;
+  gap: 4px;
+  background: #e9eff7;
+  padding: 4px;
+  border-radius: 11px;
+}
+
+#premium-matrix .pm-segment button {
+  margin: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #63758e;
+  padding: 10px 15px;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+#premium-matrix .pm-segment button[aria-pressed="true"] {
+  background: #fff;
+  color: #1d4b85;
+  box-shadow: 0 2px 6px #163c6c16;
+}
+
+#premium-matrix #pm-search {
+  margin: 0;
+  background: #fff;
+  border: 1px solid #dce5f1;
+  border-radius: 10px;
+  padding: 11px 13px;
+  min-width: 210px;
+  width: min(100%, 280px);
+  font-size: 12px;
+}
+
+#premium-matrix #pm-display {
+  margin: 0;
+  width: auto;
+  min-width: 110px;
+  background: #fff;
+  border: 1px solid #dce5f1;
+  border-radius: 10px;
+  padding: 11px;
+  font-size: 12px;
+}
+
+/* 히트맵 카드 */
+
+#premium-matrix .pm-card {
+  background: white;
+  border: 1px solid #e1e9f4;
+  border-radius: 17px;
+  padding: 19px;
+  box-shadow: 0 12px 34px #133e6a0b;
+}
+
+#premium-matrix .pm-cardhead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 13px;
+}
+
+#premium-matrix h3 {
+  font-size: 18px;
+  color: #1b3557;
+  margin: 0 0 5px;
+}
+
+#premium-matrix #pm-count {
+  font-size: 12px;
+  color: #617996;
+  background: #eef3fa;
+  padding: 7px 11px;
+  border-radius: 22px;
+}
+
+#premium-matrix .pm-scroll {
+  overflow: auto;
+  max-height: 630px;
+  border: 1px solid #e5eaf1;
+  border-radius: 9px;
+}
+
+/* 핵심: 사진 스타일 색상 매트릭스 */
+
+#premium-matrix .pm-grid {
+  border-collapse: separate;
+  border-spacing: 2px;
+  min-width: 850px;
+  width: 100%;
+  table-layout: fixed;
+  font-size: 12px;
+}
+
+#premium-matrix .pm-grid th,
+#premium-matrix .pm-grid td {
+  height: 48px;
+  border: 0;
+  padding: 2px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+#premium-matrix .pm-grid thead th {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: #eef3f9;
+  color: #566b86;
+  font-size: 11px;
+}
+
+#premium-matrix .pm-grid th:first-child {
+  width: 100px;
+  background: #f0f4f9;
+  color: #526782;
+  font-weight: 700;
+}
+
+#premium-matrix .pm-grid th:last-child,
+#premium-matrix .pm-grid td:last-child {
+  width: 83px;
+}
+
+#premium-matrix .pm-cell {
+  display: block;
+  width: 100%;
+  height: 46px;
+  border: 0;
+  margin: 0;
+  padding: 0 2px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  transition:
+    filter .13s,
+    transform .13s;
+}
+
+#premium-matrix .pm-cell:hover {
+  filter: brightness(1.08);
+  outline: 2px solid #1b427c;
+  position: relative;
+  z-index: 1;
+  transform: scale(1.025);
+}
+
+#premium-matrix .pm-cell.pm-picked {
+  outline: 3px solid #153c76;
+  outline-offset: -3px;
+}
+
+#premium-matrix .pm-cell.pm-faded {
+  opacity: .21;
+}
+
+/* 오른쪽 행 평균 */
+
+#premium-matrix .pm-mean {
+  background: #e9f0f6;
+  color: #2d5378;
+  font-weight: 800;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 하단 열 평균 */
+
+#premium-matrix .pm-grid tfoot th,
+#premium-matrix .pm-grid tfoot td {
+  position: sticky;
+  bottom: 0;
+  background: #dfe8f4;
+  color: #234d7d;
+  font-weight: 800;
+}
+
+#premium-matrix .pm-grid tfoot .pm-grand {
+  background: #c3d4e9;
+  color: #193c6c;
+}
+
+/* 하단 색상 범례 */
+
+#premium-matrix .pm-legend {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  gap: 3px;
+  flex-wrap: wrap;
+  margin-top: 13px;
+  font-size: 11px;
+  color: #7588a0;
+}
+
+#premium-matrix .pm-legend i {
+  display: block;
+  height: 15px;
+  width: clamp(25px, 7vw, 65px);
+}
+
+#premium-matrix .pm-legend small {
+  margin-left: 11px;
+  color: #6f829a;
+}
+
+/* 클릭한 산업 상세 패널 */
+
+#premium-matrix .pm-panel {
+  border: 1px solid #e0e8f3;
+  border-radius: 15px;
+  background: white;
+  margin-top: 15px;
+  padding: 19px;
+}
+
+#premium-matrix .pm-selected-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+#premium-matrix .pm-selected-header small {
+  color: #6584ad;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 1.5px;
+}
+
+#premium-matrix .pm-selected-header h3 {
+  margin: 7px 0;
+}
+
+#premium-matrix .pm-selected-header h3 span {
+  font-size: 12px;
+  color: #8190a4;
+  font-weight: 500;
+}
+
+#premium-matrix .pm-selected-header > b {
+  font-size: 11px;
+  color: #205a91;
+  background: #edf4fc;
+  padding: 7px 11px;
+  border-radius: 20px;
+}
+
+#premium-matrix .pm-selected-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 13px;
+}
+
+#premium-matrix .pm-selected-stats > div {
+  padding: 14px;
+  background: #f5f8fc;
+  border-radius: 10px;
+}
+
+#premium-matrix .pm-selected-stats small,
+#premium-matrix .pm-selected-stats span {
+  display: block;
+  font-size: 11px;
+  color: #8190a4;
+}
+
+#premium-matrix .pm-selected-stats strong {
+  display: block;
+  font-size: 24px;
+  font-variant-numeric: tabular-nums;
+  color: #214a80;
+  margin: 5px 0;
+}
+
+/* 기업 예시 */
+
+#premium-matrix .pm-company {
+  border: 1px solid #e1e9f4;
+  background: #fff;
+  border-radius: 15px;
+  padding: 19px;
+  margin-top: 15px;
+}
+
+#premium-matrix .pm-company-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+#premium-matrix .pm-company-top strong {
+  font-size: 16px;
+  color: #1c3455;
+}
+
+#premium-matrix .pm-company-top span {
+  font-size: 11px;
+  color: #7089a8;
+}
+
+#premium-matrix .pm-tags {
+  margin: 12px 0 8px;
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+#premium-matrix .pm-tags b {
+  background: #eaf2ff;
+  border: 1px solid #d8e6f9;
+  color: #20558f;
+  font-weight: 650;
+  border-radius: 8px;
+  padding: 7px 11px;
+  font-size: 12px;
+}
+
+#premium-matrix .pm-muted {
+  font-size: 12px;
+  color: #8d9aae;
+}
+
+#premium-matrix .pm-company a {
+  font-size: 12px;
+  color: #225b9e;
+  text-decoration: underline;
+}
+
+#premium-matrix .pm-note {
+  margin: 12px 5px 0;
+  font-size: 11px;
+  color: #8190a6;
+}
+
+/* 반응형 */
+
+@media (max-width: 980px) {
+  body.io-rebuilt #io-app {
+    grid-template-columns:
+      190px minmax(0, 1fr) 60px;
+  }
+}
+
+@media (max-width: 760px) {
+  body.io-rebuilt #io-app {
+    display: block;
+  }
+
+  #premium-matrix .pm-head {
+    padding: 15px;
+  }
+
+  #premium-matrix .pm-summary {
+    grid-template-columns: 1fr;
+  }
+
+  #premium-matrix .pm-card {
+    padding: 10px;
+  }
+
+  #premium-matrix .pm-selected-stats {
+    grid-template-columns: 1fr;
+  }
+}
