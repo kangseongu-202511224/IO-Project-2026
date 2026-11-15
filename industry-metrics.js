@@ -18,6 +18,52 @@
   const style = document.createElement("style");
 
   style.textContent = `
+  
+#io-metrics-panel .im-groups {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+#io-metrics-panel .im-group-button {
+  margin: 0;
+  min-height: 78px;
+  padding: 14px 10px;
+  background: #ffffff;
+  border: 1px solid #dce6f2;
+  border-radius: 13px;
+  color: #526d8b;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+}
+
+#io-metrics-panel .im-group-button:hover {
+  background: #f0f5fc;
+  border-color: #9bb8da;
+}
+
+#io-metrics-panel .im-group-button[aria-pressed="true"] {
+  background: #174b87;
+  color: #ffffff;
+  border-color: #174b87;
+  box-shadow: 0 6px 15px #174b8720;
+}
+
+@media(max-width:1100px) {
+  #io-metrics-panel .im-groups {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media(max-width:650px) {
+  #io-metrics-panel .im-groups {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
     #io-metrics-tabbar {
       display:flex;
       gap:8px;
