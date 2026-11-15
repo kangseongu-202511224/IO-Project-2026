@@ -86,7 +86,8 @@
     ["types", "◫", "산업 유형별 구조"],
     ["simulation", "⚙", "수요충격 시뮬레이터"],
     ["detail", "◎", "산업 상세 분석"],
-    ["legacy", "☷", "기존 분석표"]
+    ["legacy", "☷", "기존 분석표"],
+    ["glossary", "▤", "계수 개념·예시"]
   ];
 
   const rightTabs = [
@@ -248,7 +249,8 @@
     types: "산업 유형별 구조 분석",
     simulation: "국내 최종수요 시뮬레이터",
     detail: "산업 상세 분석",
-    legacy: "원래 산업 분석표"
+    legacy: "원래 산업 분석표",
+    glossary: "산업연관계수 개념·예시"
   };
 
   Object.keys(viewTitles).forEach(id => {
