@@ -24,7 +24,7 @@ function call(type, payload) {
 }
 
 function startWorker() {
-  worker = new Worker('./worker.js?v=20261113-3');
+  worker = new Worker('./worker.js?v=20261115-4');
 
   worker.onmessage = ({ data: d }) => {
     if (d.type === 'status') {
