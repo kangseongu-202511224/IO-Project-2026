@@ -340,16 +340,50 @@
 
   // 원래 분석 화면 다시 실행
 
+ 
+  // 기존 분석이 진행 중이면 완료 후 다시 실행
+  const waitingRedraw = new WeakSet();
+
+  function runWhenReady(button) {
+    if (!button) return;
+
+    // 버튼이 사용 가능한 상태라면 즉시 실행
+    if (!button.disabled) {
+      button.click();
+      return;
+    }
+
+    // 이미 대기 중이면 중복 등록 방지
+    if (waitingRedraw.has(button)) return;
+
+    waitingRedraw.add(button);
+
+    // 기존 계산이 끝나 버튼이 다시 활성화되면 실행
+    const observer = new MutationObserver(() => {
+      if (!button.disabled) {
+        observer.disconnect();
+        waitingRedraw.delete(button);
+        button.click();
+      }
+    });
+
+    observer.observe(button, {
+      attributes: true,
+      attributeFilter: ["disabled"]
+    });
+  }
+
   function redrawOriginals() {
+    // 홈, 비교, 순위 등 기존 분석 다시 실행
     if (
-      typeof window.IO_REANALYZE ===
-      "function"
+      typeof window.IO_REANALYZE === "function"
     ) {
       Promise.resolve(
         window.IO_REANALYZE()
       ).catch(console.error);
     }
 
+    // 4분면 맵, 트리맵, 히트맵 등 다시 실행
     for (const id of [
       "ii-run",
       "tm-run",
@@ -357,18 +391,12 @@
       "id-load",
       "analyze-btn"
     ]) {
-      const button = q("#" + id);
-
-      if (
-        button &&
-        !button.disabled
-      ) {
-        button.click();
-      }
+      runWhenReady(q("#" + id));
     }
 
     scheduleLabels();
   }
+
 
   // 선택한 지표 적용
 
