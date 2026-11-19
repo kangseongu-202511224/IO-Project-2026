@@ -664,14 +664,14 @@ title2.hidden = id !== "quadrant";
         const parent =
           node.parentElement;
 
-        if (
-          !parent ||
-          parent.closest(
-            ".io-36-chooser, script, style"
-          )
-        ) {
-          continue;
-        }
+      if (
+  !parent ||
+  parent.closest(
+    "#io-view-glossary, .io-36-chooser, script, style"
+  )
+) {
+  continue;
+}
 
         let original =
           originalNodes.get(node);
