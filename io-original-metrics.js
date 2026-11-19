@@ -662,6 +662,45 @@ title2.hidden = id !== "quadrant";
       );
   }
 
+  // 산업 상세분석 제목을 선택한 지표와 동기화
+  function updateDetailLabels() {
+    const name = normalizedLabel(selected.x);
+
+    const detail = document.querySelector(
+      "#industry-detail"
+    );
+
+    if (!detail) return;
+
+    // 첫 번째 계수 카드 제목
+    const firstTitle = detail.querySelector(
+      ".id-kpis > .id-panel:first-child .id-label"
+    );
+
+    if (firstTitle) {
+      firstTitle.textContent = name;
+    }
+
+    // 산업 순위 카드 제목
+    const rankTitle = detail.querySelector(
+      ".id-kpis > .id-panel:nth-child(3) .id-label"
+    );
+
+    if (rankTitle) {
+      rankTitle.textContent = name + " 순위";
+    }
+
+    // 순위 계기판 설명
+    const chartNote = detail.querySelector(
+      ".id-main .id-chartnote"
+    );
+
+    if (chartNote) {
+      chartNote.textContent =
+        name + " 순위 기준 · 상대 순위 점수";
+    }
+  }
+
   // 화면 업데이트 감지
 
   let scheduled = false;
@@ -695,7 +734,7 @@ title2.hidden = id !== "quadrant";
       if (
   !parent ||
   parent.closest(
-    "#io-view-glossary, .io-36-chooser, script, style"
+    "#industry-detail, #io-view-glossary, .io-36-chooser, script, style"
   )
 ) {
   continue;
@@ -704,7 +743,7 @@ title2.hidden = id !== "quadrant";
         let original =
           originalNodes.get(node);
 
-        if (
+       if (
           original === undefined ||
           node.nodeValue !==
             transformText(original)
@@ -726,6 +765,10 @@ title2.hidden = id !== "quadrant";
           node.nodeValue = updated;
         }
       }
+
+      // 현재 선택한 지표명으로 상세분석 제목 갱신
+      updateDetailLabels();
+
     });
   }
 
